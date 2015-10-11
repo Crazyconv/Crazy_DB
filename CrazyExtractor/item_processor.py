@@ -1,5 +1,6 @@
 import logging
 from lxml import etree
+import pg8000
 
 log = logging.getLogger(__name__)
 
@@ -90,4 +91,14 @@ def store(package):
         sqls.append(sql_extra)
     sqls = sqls + post_sqls
     print '\n'.join(sqls)
+    execute(sqls)
+
+
+def execute(sqls):
+    connection = pg8000.connect(host='128.199.206.253', user='gxz', password='cz4031', database='dblp')
+    cursor = connection.cursor()
+    for sql in sqls:
+        cursor.execute(sql)
+    connection.commit()
+
 
