@@ -26,7 +26,7 @@ CREATE TABLE article (
     journal     TEXT,
     month       INTEGER,
     volume      INTEGER,
-    number      INTEGER
+    number      TEXT
 );
 
 CREATE TABLE book (

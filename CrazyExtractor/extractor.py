@@ -30,7 +30,6 @@ def process_file(file_path):
 
     with open(file_path, 'r') as f:
         for line in f:
-
             # Skip first few lines
             if skip_count > 0:
                 skip_count -= 1
@@ -39,6 +38,10 @@ def process_file(file_path):
             # Remove newline from string end.
             if line[-1] == '\n':
                 line = line[:-1]
+
+            # Skip empty line
+            if len(line) == 0:
+                continue
 
             # Terminate condition
             if line == closing_tag('dblp'):
