@@ -2,9 +2,11 @@ import sys
 import logging
 import os
 
+import item_processor
+
 
 logging.basicConfig(level=logging.DEBUG)
-log = logging.getLogger()
+log = logging.getLogger(__name__)
 
 
 def get_tag(line):
@@ -17,6 +19,7 @@ def closing_tag(tag_name):
 
 def process_item(item_xml):
     log.debug('Item: ' + item_xml)
+    item_processor.consume(item_xml)
 
 
 def process_file(file_path):
@@ -38,7 +41,7 @@ def process_file(file_path):
                 line = line[:-1]
 
             # Terminate condition
-            if line == '</dblp>':
+            if line == closing_tag('dblp'):
                 break
 
             read_buffer += line
@@ -51,8 +54,7 @@ def process_file(file_path):
                 current_tag = None
 
 
-
-if __name__ == '__main__':
+def main():
     if len(sys.argv) < 2:
         print 'Please provide path to xml data file.'
         exit(1)
@@ -60,3 +62,7 @@ if __name__ == '__main__':
     real_path = os.path.abspath(input_path)
     print 'Process file ' + real_path
     process_file(real_path)
+
+
+if __name__ == '__main__':
+    main()
