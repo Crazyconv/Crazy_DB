@@ -1,6 +1,7 @@
 import logging
 from lxml import etree
 import pg8000
+import conf
 
 log = logging.getLogger(__name__)
 
@@ -103,7 +104,7 @@ def store(package):
 
 
 def execute(sqls):
-    connection = pg8000.connect(host='128.199.206.253', user='gxz', password='cz4031', database='dblp')
+    connection = pg8000.connect(host=conf.HOST, user='gxz', password='cz4031', database='dblp')
     cursor = connection.cursor()
     for sql in sqls:
         cursor.execute(sql.replace('%', '%%'))

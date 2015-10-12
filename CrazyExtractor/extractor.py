@@ -1,7 +1,7 @@
 import sys
 import logging
 import os
-
+import prepare
 import item_processor
 
 
@@ -63,6 +63,7 @@ def main():
         exit(1)
     input_path = sys.argv[1]
     real_path = os.path.abspath(input_path)
+    prepare.clean_db()
     print 'Process file ' + real_path
     process_file(real_path)
 
