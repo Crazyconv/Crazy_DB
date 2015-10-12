@@ -25,7 +25,7 @@ CREATE TABLE article (
     pubid       INTEGER     PRIMARY KEY REFERENCES publication(pubid),
     journal     TEXT,
     month       INTEGER,
-    volume      INTEGER,
+    volume      TEXT,
     number      TEXT
 );
 

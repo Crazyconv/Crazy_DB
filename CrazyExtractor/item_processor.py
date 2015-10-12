@@ -39,8 +39,8 @@ def consume(item):
     else:
         package['total_page'] = get_total_page('')
 
-    if 'volume' in package:
-        package['volume'] = int(package['volume'])
+    # if 'volume' in package:
+    #     package['volume'] = int(package['volume'])
     # if 'number' in package:
     #     package['number'] = int(package['number'])
 
