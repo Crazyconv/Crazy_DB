@@ -34,7 +34,10 @@ def consume(item):
     package['type'] = package['pubkey'].split('/')[0]
     package['year'] = int(package['year'])
     package['month'] = int(root.get('mdate').split('-')[1])
-    package['total_page'] = get_total_page(package['pages'])
+    if 'pages' in package and package['pages'] is not None:
+        package['total_page'] = get_total_page(package['pages'])
+    else:
+        package['total_page'] = get_total_page('')
 
     if 'volume' in package:
         package['volume'] = int(package['volume'])
