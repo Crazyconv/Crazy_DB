@@ -28,7 +28,7 @@ def consume(item):
             package['authors'] += [child.text]
         else:
             package[child.tag] = get_text_from_node(child)
-    # print package
+    package['authors'] = list(set(package['authors']))
 
     # Post process
     package['type'] = package['pubkey'].split('/')[0]
