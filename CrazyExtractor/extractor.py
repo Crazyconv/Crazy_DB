@@ -3,7 +3,9 @@ import logging
 import os
 import prepare
 import item_processor
+import codecs
 
+sys.stdout=codecs.getwriter('utf-8')(sys.stdout)
 
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
@@ -63,8 +65,8 @@ def main():
         exit(1)
     input_path = sys.argv[1]
     real_path = os.path.abspath(input_path)
-    prepare.clean_db()
-    print 'Process file ' + real_path
+    # prepare.clean_db()
+    log.info('Process file ' + real_path)
     process_file(real_path)
 
 
