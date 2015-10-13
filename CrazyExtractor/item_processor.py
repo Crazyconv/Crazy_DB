@@ -24,7 +24,10 @@ def consume(item):
 
     # Post process
     package['type'] = package['pubkey'].split('/')[0]
-    package['year'] = int(package['year'])
+    if 'year' in package and package['year'] is not None and package['year'].isdigit():
+        package['year'] = int(package['year'])
+    else:
+        package['year'] = 0
     package['month'] = int(root.get('mdate').split('-')[1])
     if 'pages' in package and package['pages'] is not None:
         package['total_page'] = get_total_page(package['pages'])
