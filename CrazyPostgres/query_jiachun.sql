@@ -35,6 +35,7 @@ FROM publication_count JOIN author USING (aid);
 -- 2B)
 -- index on pub_author.pubid
 -- index on pub_author.aid (group by)??
+-- index on publication.pubid (join)
 -- index on author.aid (join)
 -- use view instead of with and build index?
 
