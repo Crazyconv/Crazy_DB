@@ -34,8 +34,8 @@ FROM publication_count JOIN author USING (aid);
 
 -- 2B)
 -- index on pub_author.pubid
--- index on pub_author.aid (group by)??
 -- index on publication.pubid (join)
+-- index on pub_author.aid (group by)??
 -- index on author.aid (join)
 -- use view instead of with and build index?
 
@@ -60,7 +60,7 @@ FROM page_count JOIN author USING (aid);
 DROP VIEW IF EXISTS special_publication;
 CREATE VIEW special_publication AS(
 	SELECT publication.*
-	FROM author JOIN pub_author ON (author.aid = pub_author.aid AND author.name = 'conan')
+	FROM author JOIN pub_author ON (author.aid = pub_author.aid AND author.name = 'Yang Yang')
 				JOIN publication ON (pub_author.pubid = publication.pubid AND year = 2012)
 );
 
@@ -85,15 +85,15 @@ FROM inproceedings JOIN special_publication USING (pubid);
 DROP VIEW IF EXISTS special_publication2;
 CREATE VIEW special_publication2 AS(
 	SELECT publication.*
-	FROM author JOIN pub_author ON (author.aid = pub_author.aid AND author.name = 'bumei')
-				JOIN publication ON (pub_author.pubid = publication.pubid AND year = 2014 AND type = 'conf')
+	FROM author JOIN pub_author ON (author.aid = pub_author.aid AND author.name = 'Wei Wang')
+				JOIN publication ON (pub_author.pubid = publication.pubid AND year = 2009 AND type = 'conf')
 );
 
 SELECT article.pubid, pubkey, title, year, journal, month, volume, number 
-FROM article JOIN special_publication2 ON (article.journal = 'conan' AND article.pubid = special_publication2.pubid);
+FROM article JOIN special_publication2 ON (article.journal = 'CSCWD' AND article.pubid = special_publication2.pubid);
 
 SELECT inproceedings.pubid, pubkey, title, year, booktitle, editor
-FROM inproceedings JOIN special_publication2 ON (inproceedings.booktitle = 'conan' AND inproceedings.pubid = special_publication2.pubid);
+FROM inproceedings JOIN special_publication2 ON (inproceedings.booktitle = 'CSCWD' AND inproceedings.pubid = special_publication2.pubid);
 
 -- 4A)
 -- index on article.journal, article.pubid
