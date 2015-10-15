@@ -134,8 +134,8 @@ DROP VIEW IF EXISTS decade_author;
 DROP VIEW IF EXISTS decade_pub;
 
 CREATE VIEW decade_author AS(
-  SELECT pub_author.*, publication.year 
-  FROM pub_author 
+  SELECT pub_author.*, publication.year
+  FROM pub_author
   LEFT JOIN publication USING (pubid)
 );
 
@@ -195,7 +195,7 @@ CREATE VIEW collaborator_count AS(
   SELECT aid, count(DISTINCT colla_id) AS colla_num
   FROM collaborator
   GROUP BY aid
-  ORDER BY colla_num
+  ORDER BY colla_num DESC
   LIMIT 1
 );
 
