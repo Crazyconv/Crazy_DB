@@ -12,7 +12,7 @@ UNION
 -- Query 2A
 
 DROP VIEW IF EXISTS pub_count_2A CASCADE;
-DROP VIEW IF EXISTS pub_rank_2A;
+DROP VIEW IF EXISTS pub_rank_2A CASCADE;
 
 CREATE VIEW pub_count_2A AS(
   SELECT aid, count(*) AS num_pub
@@ -35,7 +35,7 @@ ORDER BY rank;
 -- Query 2B
 
 DROP VIEW IF EXISTS pub_count_2B CASCADE;
-DROP VIEW IF EXISTS pub_rank_2B;
+DROP VIEW IF EXISTS pub_rank_2B CASCADE;
 CREATE VIEW pub_count_2B AS(
   SELECT pub_author.aid, SUM(total_page) AS total_page
   FROM pub_author
@@ -58,7 +58,7 @@ ORDER BY rank;
 -- Query 3 : Author: Yan Zhang
 -- Query 3A
 
-DROP VIEW IF EXISTS pub_info_3A;
+DROP VIEW IF EXISTS pub_info_3A CASCADE;
 CREATE VIEW pub_info_3A AS(
   SELECT author.name, publication.*
   FROM pub_author
@@ -76,7 +76,7 @@ LEFT JOIN inproceedings ON pub_info_3A.pubid = inproceedings.pubid;
 ----------
 -- Query 3B
 
-DROP VIEW IF EXISTS pub_info_3B;
+DROP VIEW IF EXISTS pub_info_3B CASCADE;
 CREATE VIEW pub_info_3B AS(
   SELECT author.name, publication.*
   FROM author 
@@ -97,6 +97,7 @@ WHERE inproceedings.booktitle = 'CSCWD';
 --Query 4A:
 
 DROP VIEW IF EXISTS PVLDB_4 CASCADE;
+DROP VIEW IF EXISTS KDD_4A CASCADE;
 CREATE VIEW PVLDB_4 AS(
   SELECT pub_author.aid, count(*) AS PVLDB_num
   FROM pub_author
@@ -106,7 +107,6 @@ CREATE VIEW PVLDB_4 AS(
   HAVING count(aid) >= 10
 );
 
-DROP VIEW IF EXISTS KDD_4A CASCADE;
 CREATE VIEW KDD_4A AS(
   SELECT pub_author.aid, count(*) AS KDD_num
   FROM pub_author
@@ -116,7 +116,7 @@ CREATE VIEW KDD_4A AS(
 );
 
 -- Query 4A:
-DROP VIEW IF EXISTS P10K5;
+DROP VIEW IF EXISTS P10K5 CASCADE;
 CREATE VIEW P10K5 AS(
   SELECT aid FROM PVLDB_4
   INTERSECT
@@ -127,7 +127,7 @@ FROM author JOIN P10K5 ON (author.aid = P10K5.aid);
 
 ----------
 --Query 4B:
-DROP VIEW IF EXISTS P10K0;
+DROP VIEW IF EXISTS P10K0 CASCADE;
 CREATE VIEW P10K0 AS(
   SELECT aid FROM PVLDB_4
   EXCEPT
@@ -243,7 +243,7 @@ CREATE VIEW decade_2010_top_author AS(
 ----------
 --Query 7
 DROP VIEW IF EXISTS collaborator CASCADE;
-DROP VIEW IF EXISTS collaborator_counts;
+DROP VIEW IF EXISTS collaborator_counts CASCADE;
 
 
 CREATE VIEW collaborator AS(
@@ -267,7 +267,7 @@ ON collaborator_count.aid = author.aid AND colla_num = (SELECT MAX(colla_num) FR
 ----------
 -- Query 8
 -- select the authors who have writen more than 500 pages of publication
-DROP VIEW IF EXISTS page_count_8;
+DROP VIEW IF EXISTS page_count_8 CASCADE;
 
 CREATE VIEW page_count_8 AS(
   SELECT pub_author.aid, SUM(total_page) AS total_page
@@ -285,7 +285,8 @@ ORDER by total_page DESC;
 ----------
 -- Query 9
 -- select the top ten prolistic authors in all the conferences
-DROP VIEW IF EXISTS page_count_9;
+DROP VIEW IF EXISTS pub_count_9 CASCADE;
+DROP VIEW IF EXISTS pub_rank_9 CASCADE;
 
 CREATE VIEW pub_count_9 AS(
   SELECT pub_author.aid, count(*) as pub_num
