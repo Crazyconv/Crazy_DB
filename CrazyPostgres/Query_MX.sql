@@ -10,6 +10,8 @@ UNION
 
 ----------
 -- Query 2A
+-- pub_author.aid
+-- author.aid -> already index
 
 DROP VIEW IF EXISTS pub_count_2A CASCADE;
 DROP VIEW IF EXISTS pub_rank_2A CASCADE;
@@ -33,6 +35,10 @@ ORDER BY rank;
 
 ----------
 -- Query 2B
+-- pub_author.aid
+-- pub_author.pubid
+-- publication.pubid -> already index
+-- author.aid -> already index
 
 DROP VIEW IF EXISTS pub_count_2B CASCADE;
 DROP VIEW IF EXISTS pub_rank_2B CASCADE;
@@ -57,6 +63,12 @@ ORDER BY rank;
 ----------
 -- Query 3 : Author: Yan Zhang
 -- Query 3A
+-- pub_author.aid
+-- pub_author.pubid
+-- author.aid -> already index
+-- author.name -> already index
+-- publication.year
+-- publication/....pubid -> already index
 
 DROP VIEW IF EXISTS pub_info_3A CASCADE;
 CREATE VIEW pub_info_3A AS(
@@ -75,6 +87,15 @@ LEFT JOIN inproceedings ON pub_info_3A.pubid = inproceedings.pubid;
 
 ----------
 -- Query 3B
+-- pub_author.aid
+-- pub_author.pubid
+-- author.aid -> already index
+-- author.name -> already index
+-- publication.year
+-- publication.type
+-- publication/....pubid -> already index
+-- article.journal
+-- inproceedings.booktitle
 
 DROP VIEW IF EXISTS pub_info_3B CASCADE;
 CREATE VIEW pub_info_3B AS(
@@ -95,6 +116,13 @@ WHERE inproceedings.booktitle = 'CSCWD';
 
 ----------
 --Query 4A:
+-- pub_author.aid
+-- pub_author.pubid
+-- article.pubid -> already index
+-- article.journal
+-- inproceedings.pubid -> already index
+-- inproceedings.booktitle
+-- index on author.aid -> already index
 
 DROP VIEW IF EXISTS PVLDB_4 CASCADE;
 DROP VIEW IF EXISTS KDD_4A CASCADE;
@@ -138,6 +166,7 @@ FROM author JOIN P10K0 ON (author.aid = P10K0.aid);
 
 ----------
 --Query 5:
+-- publication.year
 DROP VIEW IF EXISTS decade_1970 CASCADE;
 DROP VIEW IF EXISTS decade_1980 CASCADE;
 DROP VIEW IF EXISTS decade_1990 CASCADE;
@@ -181,6 +210,9 @@ UNION
 
 ----------
 -- Query 6:
+-- pub_author.aid
+-- pub_author.pubid
+-- author.aid -> already index
 DROP VIEW IF EXISTS decade_1970_top_author CASCADE;
 DROP VIEW IF EXISTS decade_1980_top_author CASCADE;
 DROP VIEW IF EXISTS decade_1990_top_author CASCADE; 
@@ -242,6 +274,9 @@ CREATE VIEW decade_2010_top_author AS(
 
 ----------
 --Query 7
+-- pub_author.aid
+-- pub_author.pubid
+-- author.aid -> index already
 DROP VIEW IF EXISTS collaborator CASCADE;
 DROP VIEW IF EXISTS collaborator_counts CASCADE;
 
@@ -266,7 +301,11 @@ ON collaborator_count.aid = author.aid AND colla_num = (SELECT MAX(colla_num) FR
 
 ----------
 -- Query 8
--- select the authors who have writen more than 500 pages of publication
+-- select the authors who have writen more than 4000 pages of publication
+-- pub_author.pubid
+-- pub_author.aid
+-- publication.pubid -> already index
+-- author.id -> already index
 DROP VIEW IF EXISTS page_count_8 CASCADE;
 
 CREATE VIEW page_count_8 AS(
@@ -285,6 +324,11 @@ ORDER by total_page DESC;
 ----------
 -- Query 9
 -- select the top ten prolistic authors in all the conferences
+-- pub_author.aid
+-- pub_author.pubid
+-- publication.pubid -> already index
+-- publication.type
+-- author.aid -> already index
 DROP VIEW IF EXISTS pub_count_9 CASCADE;
 DROP VIEW IF EXISTS pub_rank_9 CASCADE;
 
