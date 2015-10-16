@@ -16,3 +16,5 @@ CREATE INDEX publication_type_index ON publication (type);
 
 CREATE INDEX article_journal_index ON article (journal);
 CREATE INDEX inproceedings_booktitle_index ON inproceedings (booktitle);
+
+ANALYZE;
