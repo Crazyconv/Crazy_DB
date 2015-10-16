@@ -10,30 +10,47 @@ UNION
 
 -- Query 2A
 
-DROP VIEW IF EXISTS pub_count_2A;
+DROP VIEW IF EXISTS pub_count_2A CASCADE;
+DROP VIEW IF EXISTS pub_rank_2A;
+
 CREATE VIEW pub_count_2A AS(
   SELECT aid, count(*) AS num_pub
   FROM pub_author
   GROUP BY aid
-  ORDER BY num_pub DESC
-  LIMIT 10
 );
 
-SELECT author.name FROM pub_count_2A LEFT JOIN author ON pub_count_2A.aid = author.aid;
+CREATE VIEW pub_rank_2A AS(
+  SELECT aid, rank() OVER (ORDER BY num_pub DESC)
+	FROM pub_count_2A
+);
+
+SELECT pub_rank_2A.rank, author.name
+FROM pub_rank_2A
+JOIN author USING (aid)
+WHERE rank <= 10
+ORDER BY rank;
 
 -- Query 2B
 
-DROP VIEW IF EXISTS pub_count_2B;
+DROP VIEW IF EXISTS pub_count_2B CASCADE;
+DROP VIEW IF EXISTS pub_rank_2B;
 CREATE VIEW pub_count_2B AS(
   SELECT pub_author.aid, SUM(total_page) AS total_page
   FROM pub_author
-  LEFT JOIN publication ON pub_author.pubid = publication.pubid
+  JOIN publication USING (pubid)
   GROUP BY aid
-  ORDER BY total_page DESC
-  LIMIT 10
 );
 
-SELECT author.name FROM pub_count_2B LEFT JOIN author ON pub_count_2B.aid = author.aid;
+CREATE VIEW pub_rank_2B AS(
+  SELECT aid, rank() OVER (ORDER BY total_page DESC)
+  FROM pub_count_2B
+);
+
+SELECT pub_rank_2B.rank, author.name
+FROM pub_rank_2B
+JOIN author USING (aid)
+WHERE rank <= 10
+ORDER BY rank;
 
 -- Query 3 : Author: Yan Zhang
 -- Query 3A
@@ -203,3 +220,43 @@ SELECT author.name
 FROM collaborator_count
 LEFT JOIN author
 ON collaborator_count.aid = author.aid
+
+-- Query 8
+-- select the authors who have writen more than 500 pages of publication
+DROP VIEW IF EXISTS page_count_8;
+
+CREATE VIEW page_count_8 AS(
+  SELECT pub_author.aid, SUM(total_page) AS total_page
+  FROM pub_author
+  JOIN publication USING (pubid)
+  GROUP BY aid
+);
+
+SELECT author.name, total_page
+FROM page_count_8
+JOIN author USING (aid)
+WHERE total_page >= 4000
+ORDER by total_page DESC;
+
+-- Query 9
+-- select the top ten prolistic authors in all the conferences
+DROP VIEW IF EXISTS page_count_9;
+
+CREATE VIEW pub_count_9 AS(
+  SELECT pub_author.aid, count(*) as pub_num
+  FROM pub_author
+  JOIN publication USING (pubid)
+  WHERE publication.type = 'conf'
+  GROUP BY aid
+);
+
+CREATE VIEW pub_rank_9 AS(
+  SELECT aid, rank() OVER (ORDER BY pub_num DESC)
+  FROM pub_count_9
+);
+
+SELECT pub_rank_2B.rank, author.name
+FROM pub_rank_2B
+JOIN author USING (aid)
+WHERE rank <= 10
+ORDER BY rank;
