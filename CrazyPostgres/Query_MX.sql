@@ -6,7 +6,7 @@ UNION
 UNION
 (SELECT 'Incollection' AS type, count(*) AS num FROM incollection)
 UNION
-(SELECT 'Inproceeding' AS type, count(*) AS num FROM inproceeding);
+(SELECT 'Inproceeding' AS type, count(*) AS num FROM inproceedings);
 
 -- Query 2A
 
@@ -64,7 +64,7 @@ CREATE VIEW PVLDB_4 AS(
   GROUP BY aid
 );
 
-DROP VIEW IF EXISTS KDD_4;
+DROP VIEW IF EXISTS KDD_4A;
 CREATE VIEW KDD_4A AS(
   SELECT pub_author.aid, count(*) AS KDD_num
   FROM pub_author
@@ -130,71 +130,48 @@ UNION
 (SELECT '2010-2019' AS decade, count(*) AS num FROM decade_2010);
 
 -- Query 6:
-DROP VIEW IF EXISTS decade_1970;
-DROP VIEW IF EXISTS decade_1980;
-DROP VIEW IF EXISTS decade_1990;
-DROP VIEW IF EXISTS decade_2000;
-DROP VIEW IF EXISTS decade_2010;
+DROP VIEW IF EXISTS decade_author;
 DROP VIEW IF EXISTS decade_pub;
 
-CREATE VIEW decade_1970 AS(
-  SELECT pubid FROM publication
-  WHERE year >= 1970 and year <= 1979
-);
-
-CREATE VIEW decade_1980 AS(
-  SELECT pubid FROM publication
-  WHERE year >= 1980 and year <= 1989
-);
-
-CREATE VIEW decade_1990 AS(
-  SELECT pubid FROM publication
-  WHERE year >= 1990 and year <= 1999
-);
-
-CREATE VIEW decade_2000 AS(
-  SELECT pubid FROM publication
-  WHERE year >= 2000 and year <= 2009
-);
-
-CREATE VIEW decade_2010 AS(
-  SELECT pubid FROM publication
-  WHERE year >= 2010 and year <= 2019
+CREATE VIEW decade_author AS(
+  SELECT pub_author.*, publication.year
+  FROM pub_author
+  LEFT JOIN publication USING (pubid)
 );
 
 CREATE VIEW decade_pub AS(
-  (SELECT '1970-1979' AS decade, pub_author.aid, count(pubid) as pub_num
-  FROM decade_1970
-  LEFT JOIN pub_author USING (pubid)
-  GROUP BY pub_author.aid
-  ORDER BY pub_num DESC
-  LIMIT 1)
-  UNION
-  (SELECT '1980-1989' AS decade, pub_author.aid, count(pubid) as pub_num
-  FROM decade_1980
-  LEFT JOIN pub_author USING (pubid)
-  GROUP BY pub_author.aid
-  ORDER BY pub_num DESC
-  LIMIT 1)
-  UNION
-  (SELECT '1990-1999' AS decade, pub_author.aid, count(pubid) as pub_num
-  FROM decade_1990
-  LEFT JOIN pub_author USING (pubid)
-  GROUP BY pub_author.aid
-  ORDER BY pub_num DESC
-  LIMIT 1)
-  UNION
-  (SELECT '2000-2009' AS decade, pub_author.aid, count(pubid) as pub_num
-  FROM decade_2000
-  LEFT JOIN pub_author USING (pubid)
-  GROUP BY pub_author.aid
-  ORDER BY pub_num DESC
-  LIMIT 1)
-  UNION
-  (SELECT '2010_2019' AS decade, pub_author.aid, count(pubid) as pub_num
+  (SELECT '1970-1979' AS decade, aid, count(pubid) as pub_num
   FROM decade_author
-  LEFT JOIN pub_author USING (pubid)
-  GROUP BY pub_author.aid
+  WHERE year >= 1970 and year <= 1979
+  GROUP BY aid
+  ORDER BY pub_num DESC
+  LIMIT 1)
+  UNION
+  (SELECT '1980-1989' AS decade, aid, count(pubid) as pub_num
+  FROM decade_author
+  WHERE year >= 1980 and year <= 1989
+  GROUP BY aid
+  ORDER BY pub_num DESC
+  LIMIT 1)
+  UNION
+  (SELECT '1990-1999' AS decade, aid, count(pubid) as pub_num
+  FROM decade_author
+  WHERE year >= 1990 and year <= 1999
+  GROUP BY aid
+  ORDER BY pub_num DESC
+  LIMIT 1)
+  UNION
+  (SELECT '2000-2009' AS decade, aid, count(pubid) as pub_num
+  FROM decade_author
+  WHERE year >= 2000 and year <= 2009
+  GROUP BY aid
+  ORDER BY pub_num DESC
+  LIMIT 1)
+  UNION
+  (SELECT '2010_2019' AS decade, aid, count(pubid) as pub_num
+  FROM decade_author
+  WHERE year >= 2010 and year <= 2019
+  GROUP BY aid
   ORDER BY pub_num DESC
   LIMIT 1)
 );
@@ -204,6 +181,9 @@ FROM decade_pub
 LEFT JOIN author ON decade_pub.aid = author.aid;
 
 --Query 7
+DROP VIEW IF EXISTS collaborator;
+DROP VIEW IF EXISTS collaborator_counts;
+
 
 CREATE VIEW collaborator AS(
   SELECT a.*, b.aid as colla_id
@@ -215,7 +195,7 @@ CREATE VIEW collaborator_count AS(
   SELECT aid, count(DISTINCT colla_id) AS colla_num
   FROM collaborator
   GROUP BY aid
-  ORDER BY colla_num
+  ORDER BY colla_num DESC
   LIMIT 1
 );
 
