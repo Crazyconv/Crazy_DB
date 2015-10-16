@@ -79,7 +79,7 @@ LEFT JOIN inproceedings ON pub_info_3A.pubid = inproceedings.pubid;
 DROP VIEW IF EXISTS pub_info_3B;
 CREATE VIEW pub_info_3B AS(
   SELECT author.name, publication.*
-  FROM author 
+  FROM author
   JOIN pub_author ON (author.aid = pub_author.aid)
   JOIN publication ON (pub_author.pubid = publication.pubid)
   WHERE author.name = 'Wei Wang' AND year = 2009 AND type = 'conf'
@@ -212,24 +212,24 @@ CREATE VIEW decade_2010_top_author AS(
 );
 
 (
-  SELECT '1970 - 1979' AS decade, name 
-  FROM decade_1970_top_author JOIN author ON 
+  SELECT '1970 - 1979' AS decade, name
+  FROM decade_1970_top_author JOIN author ON
     (pub_num = (SELECT MAX(pub_num) FROM decade_1970_top_author) AND decade_1970_top_author.aid = author.aid)
 ) UNION ALL (
-  SELECT '1980 - 1989' AS decade, name 
-  FROM decade_1980_top_author JOIN author ON 
+  SELECT '1980 - 1989' AS decade, name
+  FROM decade_1980_top_author JOIN author ON
     (pub_num = (SELECT MAX(pub_num) FROM decade_1980_top_author) AND decade_1980_top_author.aid = author.aid)
 ) UNION ALL (
-  SELECT '1990 - 1999' AS decade, name 
-  FROM decade_1990_top_author JOIN author ON 
+  SELECT '1990 - 1999' AS decade, name
+  FROM decade_1990_top_author JOIN author ON
     (pub_num = (SELECT MAX(pub_num) FROM decade_1990_top_author) AND decade_1990_top_author.aid = author.aid)
 ) UNION ALL (
-  SELECT '2000 - 2009' AS decade, name 
-  FROM decade_2000_top_author JOIN author ON 
+  SELECT '2000 - 2009' AS decade, name
+  FROM decade_2000_top_author JOIN author ON
     (pub_num = (SELECT MAX(pub_num) FROM decade_2000_top_author) AND decade_2000_top_author.aid = author.aid)
 ) UNION ALL (
-  SELECT '2010 - 2019', name 
-  FROM decade_2010_top_author JOIN author ON 
+  SELECT '2010 - 2019', name
+  FROM decade_2010_top_author JOIN author ON
     (pub_num = (SELECT MAX(pub_num) FROM decade_2010_top_author) AND decade_2010_top_author.aid = author.aid)
 );
 
@@ -291,11 +291,8 @@ CREATE VIEW pub_rank_9 AS(
   FROM pub_count_9
 );
 
-SELECT pub_rank_2B.rank, author.name
-FROM pub_rank_2B
+SELECT pub_rank_9.rank, author.name
+FROM pub_rank_9
 JOIN author USING (aid)
 WHERE rank <= 10
 ORDER BY rank;
-
-JOIN author
-ON collaborator_count.aid = author.aid AND colla_num = (SELECT MAX(colla_num) FROM collaborator_count);
