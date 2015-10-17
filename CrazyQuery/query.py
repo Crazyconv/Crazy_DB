@@ -13,7 +13,7 @@ db_name = None
 
 
 def execute(sqls):
-    connection = pg8000.connect(host=conf.HOST, user='gxz', password='cz4031', database=db_name)
+    connection = pg8000.connect(host=conf.HOST, user='postgres', password='cz4031', database=db_name)
     cursor = connection.cursor()
     for sql in sqls.split(';')[:-1]:
         cursor.execute(sql.replace('%', '%%'))
