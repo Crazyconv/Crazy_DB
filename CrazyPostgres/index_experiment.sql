@@ -137,6 +137,38 @@ CREATE VIEW P10K0 AS(
 SELECT name
 FROM author JOIN P10K0 ON (author.aid = P10K0.aid);
 
+----------
+--Query 5 create view only
+DROP VIEW IF EXISTS decade_1970 CASCADE;
+DROP VIEW IF EXISTS decade_1980 CASCADE;
+DROP VIEW IF EXISTS decade_1990 CASCADE;
+DROP VIEW IF EXISTS decade_2000 CASCADE;
+DROP VIEW IF EXISTS decade_2010 CASCADE;
+
+CREATE VIEW decade_1970 AS(
+  SELECT pubid FROM publication
+  WHERE year >= 1970 and year <= 1979
+);
+
+CREATE VIEW decade_1980 AS(
+  SELECT pubid FROM publication
+  WHERE year >= 1980 and year <= 1989
+);
+
+CREATE VIEW decade_1990 AS(
+  SELECT pubid FROM publication
+  WHERE year >= 1990 and year <= 1999
+);
+
+CREATE VIEW decade_2000 AS(
+  SELECT pubid FROM publication
+  WHERE year >= 2000 and year <= 2009
+);
+
+CREATE VIEW decade_2010 AS(
+  SELECT pubid FROM publication
+  WHERE year >= 2010 and year <= 2019
+);
 
 ----------
 -- Query 6:
@@ -388,6 +420,39 @@ CREATE VIEW P10K0 AS(
 );
 SELECT name
 FROM author JOIN P10K0 ON (author.aid = P10K0.aid);
+
+----------
+--Query 5 create view only
+DROP VIEW IF EXISTS decade_1970 CASCADE;
+DROP VIEW IF EXISTS decade_1980 CASCADE;
+DROP VIEW IF EXISTS decade_1990 CASCADE;
+DROP VIEW IF EXISTS decade_2000 CASCADE;
+DROP VIEW IF EXISTS decade_2010 CASCADE;
+
+CREATE VIEW decade_1970 AS(
+  SELECT pubid FROM publication
+  WHERE year >= 1970 and year <= 1979
+);
+
+CREATE VIEW decade_1980 AS(
+  SELECT pubid FROM publication
+  WHERE year >= 1980 and year <= 1989
+);
+
+CREATE VIEW decade_1990 AS(
+  SELECT pubid FROM publication
+  WHERE year >= 1990 and year <= 1999
+);
+
+CREATE VIEW decade_2000 AS(
+  SELECT pubid FROM publication
+  WHERE year >= 2000 and year <= 2009
+);
+
+CREATE VIEW decade_2010 AS(
+  SELECT pubid FROM publication
+  WHERE year >= 2010 and year <= 2019
+);
 
 ----------
 -- Query 6:
@@ -861,6 +926,38 @@ JOIN author USING (aid)
 WHERE rank <= 10
 ORDER BY rank;
 
+----------
+--Query 5 create view only
+DROP VIEW IF EXISTS decade_1970 CASCADE;
+DROP VIEW IF EXISTS decade_1980 CASCADE;
+DROP VIEW IF EXISTS decade_1990 CASCADE;
+DROP VIEW IF EXISTS decade_2000 CASCADE;
+DROP VIEW IF EXISTS decade_2010 CASCADE;
+
+CREATE VIEW decade_1970 AS(
+  SELECT pubid FROM publication
+  WHERE year >= 1970 and year <= 1979
+);
+
+CREATE VIEW decade_1980 AS(
+  SELECT pubid FROM publication
+  WHERE year >= 1980 and year <= 1989
+);
+
+CREATE VIEW decade_1990 AS(
+  SELECT pubid FROM publication
+  WHERE year >= 1990 and year <= 1999
+);
+
+CREATE VIEW decade_2000 AS(
+  SELECT pubid FROM publication
+  WHERE year >= 2000 and year <= 2009
+);
+
+CREATE VIEW decade_2010 AS(
+  SELECT pubid FROM publication
+  WHERE year >= 2010 and year <= 2019
+);
 
 ----------
 -- Query 6:
