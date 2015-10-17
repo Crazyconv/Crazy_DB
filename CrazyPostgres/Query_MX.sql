@@ -1,3 +1,5 @@
+analyze;
+----------
 -- Query 1
 
 (SELECT 'Article' AS type, count(*) AS num FROM article)

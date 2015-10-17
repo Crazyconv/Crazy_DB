@@ -9,9 +9,11 @@ import time
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
+db_name = None
+
 
 def execute(sqls):
-    connection = pg8000.connect(host=conf.HOST, user='gxz', password='cz4031', database=conf.DB_NAME)
+    connection = pg8000.connect(host=conf.HOST, user='gxz', password='cz4031', database=db_name)
     cursor = connection.cursor()
     for sql in sqls.split(';')[:-1]:
         cursor.execute(sql.replace('%', '%%'))
@@ -19,10 +21,12 @@ def execute(sqls):
 
 
 def main():
-    if len(sys.argv) < 2:
-        print 'Please provide path to SQL file.'
+    global db_name
+    if len(sys.argv) < 3:
+        print 'Please provide path to SQL file and db name'
         exit(1)
     input_path = sys.argv[1]
+    db_name = sys.argv[2]
     real_path = os.path.abspath(input_path)
     # prepare.clean_db()
     log.info('Process file ' + real_path)
