@@ -1193,3 +1193,6 @@ UNION
 (SELECT '2000-2009' AS decade, count(*) AS num FROM decade_2000)
 UNION
 (SELECT '2010-2019' AS decade, count(*) AS num FROM decade_2010);
+
+----------
+DROP INDEX IF EXISTS publication_year_index;
