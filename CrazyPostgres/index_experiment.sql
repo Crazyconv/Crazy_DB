@@ -1208,7 +1208,7 @@ FROM author JOIN P10K0 ON (author.aid = P10K0.aid);
 /*********************** publication.type ************************/
 
 DROP INDEX IF EXISTS article_journal_index;
-DROP INDEX IF EXISTS pinproceedings_booktitle_index;
+DROP INDEX IF EXISTS inproceedings_booktitle_index;
 CREATE INDEX publication_type_index ON publication (type);
 ANALYZE;
 
@@ -1244,6 +1244,7 @@ ORDER BY rank;
 
 DROP INDEX IF EXISTS pub_author_aid_index;
 DROP INDEX IF EXISTS pub_author_pubid_index;
+DROP INDEX IF EXISTS publication_type_index;
 CREATE INDEX publication_year_index ON publication (year);
 ANALYZE;
 
