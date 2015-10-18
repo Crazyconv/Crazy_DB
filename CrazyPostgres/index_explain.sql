@@ -1245,6 +1245,7 @@ ORDER BY rank;
 
 DROP INDEX IF EXISTS pub_author_aid_index;
 DROP INDEX IF EXISTS pub_author_pubid_index;
+DROP INDEX IF EXISTSpublication_type_index;
 CREATE INDEX publication_year_index ON publication (year);
 ANALYZE;
 
