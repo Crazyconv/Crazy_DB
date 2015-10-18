@@ -1,0 +1,1647 @@
+CREATE INDEX
+ANALYZE
+DROP VIEW
+DROP VIEW
+CREATE VIEW
+CREATE VIEW
+                                                                          QUERY PLAN                                                                          
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=434064.37..434297.41 rows=93217 width=23)
+   Sort Key: pub_rank_2a.rank
+   ->  Merge Join  (cost=365636.82..424455.60 rows=93217 width=23)
+         Merge Cond: (author.aid = pub_rank_2a.aid)
+         ->  Index Scan using author_pkey on author  (cost=0.43..53069.56 rows=1647342 width=19)
+         ->  Materialize  (cost=365636.39..366102.47 rows=93217 width=12)
+               ->  Sort  (cost=365636.39..365869.43 rows=93217 width=12)
+                     Sort Key: pub_rank_2a.aid
+                     ->  Subquery Scan on pub_rank_2a  (cost=347956.56..356346.12 rows=93217 width=12)
+                           Filter: (pub_rank_2a.rank <= 10)
+                           ->  WindowAgg  (cost=347956.56..352850.47 rows=279652 width=12)
+                                 ->  Sort  (cost=347956.56..348655.69 rows=279652 width=12)
+                                       Sort Key: pub_count_2a.num_pub
+                                       ->  Subquery Scan on pub_count_2a  (cost=0.43..317876.46 rows=279652 width=12)
+                                             ->  GroupAggregate  (cost=0.43..315079.93 rows=279652 width=4)
+                                                   ->  Index Only Scan using pub_author_aid_index on pub_author  (cost=0.43..261864.67 rows=10083749 width=4)
+(16 rows)
+
+DROP VIEW
+DROP VIEW
+CREATE VIEW
+CREATE VIEW
+                                                                             QUERY PLAN                                                                              
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=2376460.65..2376693.69 rows=93217 width=23)
+   Sort Key: pub_rank_2b.rank
+   ->  Merge Join  (cost=2308033.09..2366851.87 rows=93217 width=23)
+         Merge Cond: (author.aid = pub_rank_2b.aid)
+         ->  Index Scan using author_pkey on author  (cost=0.43..53069.56 rows=1647342 width=19)
+         ->  Materialize  (cost=2308032.66..2308498.75 rows=93217 width=12)
+               ->  Sort  (cost=2308032.66..2308265.71 rows=93217 width=12)
+                     Sort Key: pub_rank_2b.aid
+                     ->  Subquery Scan on pub_rank_2b  (cost=2290352.83..2298742.39 rows=93217 width=12)
+                           Filter: (pub_rank_2b.rank <= 10)
+                           ->  WindowAgg  (cost=2290352.83..2295246.74 rows=279652 width=12)
+                                 ->  Sort  (cost=2290352.83..2291051.96 rows=279652 width=12)
+                                       Sort Key: pub_count_2b.total_page
+                                       ->  Subquery Scan on pub_count_2b  (cost=2179051.57..2260272.73 rows=279652 width=12)
+                                             ->  GroupAggregate  (cost=2179051.57..2257476.21 rows=279652 width=8)
+                                                   ->  Sort  (cost=2179051.57..2204260.95 rows=10083749 width=8)
+                                                         Sort Key: pub_author.aid
+                                                         ->  Merge Join  (cost=24.04..592437.81 rows=10083749 width=8)
+                                                               Merge Cond: (publication.pubid = pub_author.pubid)
+                                                               ->  Index Scan using publication_pkey on publication  (cost=0.43..192950.33 rows=4637834 width=8)
+                                                               ->  Index Only Scan using pub_author_pkey on pub_author  (cost=0.43..261860.67 rows=10083749 width=8)
+(21 rows)
+
+DROP VIEW
+CREATE VIEW
+                                                          QUERY PLAN                                                          
+------------------------------------------------------------------------------------------------------------------------------
+ Nested Loop Left Join  (cost=2.72..219.09 rows=1 width=312)
+   ->  Nested Loop Left Join  (cost=2.30..211.49 rows=1 width=267)
+         ->  Nested Loop Left Join  (cost=2.01..204.06 rows=1 width=175)
+               ->  Nested Loop Left Join  (cost=1.72..196.70 rows=1 width=142)
+                     ->  Nested Loop  (cost=1.29..189.11 rows=1 width=105)
+                           ->  Nested Loop  (cost=0.86..143.20 rows=6 width=19)
+                                 ->  Index Scan using author_name_key on author  (cost=0.43..8.45 rows=1 width=19)
+                                       Index Cond: (name = 'Yan Zhang'::text)
+                                 ->  Index Scan using pub_author_aid_index on pub_author  (cost=0.43..134.39 rows=36 width=8)
+                                       Index Cond: (aid = author.aid)
+                           ->  Index Scan using publication_pkey on publication  (cost=0.43..7.64 rows=1 width=90)
+                                 Index Cond: (pubid = pub_author.pubid)
+                                 Filter: (year = 2012)
+                     ->  Index Scan using article_pkey on article  (cost=0.43..7.58 rows=1 width=37)
+                           Index Cond: (publication.pubid = pubid)
+               ->  Index Scan using book_pkey on book  (cost=0.29..7.35 rows=1 width=33)
+                     Index Cond: (publication.pubid = pubid)
+         ->  Index Scan using incollection_pkey on incollection  (cost=0.29..7.42 rows=1 width=92)
+               Index Cond: (publication.pubid = pubid)
+   ->  Index Scan using inproceedings_pkey on inproceedings  (cost=0.43..7.59 rows=1 width=45)
+         Index Cond: (publication.pubid = pubid)
+(21 rows)
+
+DROP VIEW
+CREATE VIEW
+                                                 QUERY PLAN                                                 
+------------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=1.72..196.03 rows=1 width=138)
+   ->  Nested Loop  (cost=1.29..188.43 rows=1 width=56)
+         ->  Nested Loop  (cost=0.86..143.20 rows=6 width=19)
+               ->  Index Scan using author_name_key on author  (cost=0.43..8.45 rows=1 width=19)
+                     Index Cond: (name = 'Wei Wang'::text)
+               ->  Index Scan using pub_author_aid_index on pub_author  (cost=0.43..134.39 rows=36 width=8)
+                     Index Cond: (aid = author.aid)
+         ->  Index Scan using article_pkey on article  (cost=0.43..7.53 rows=1 width=37)
+               Index Cond: (pubid = pub_author.pubid)
+               Filter: (journal = 'CSCWD'::text)
+   ->  Index Scan using publication_pkey on publication  (cost=0.43..7.59 rows=1 width=90)
+         Index Cond: (pubid = pub_author.pubid)
+         Filter: ((year = 2009) AND (type = 'conf'::text))
+(13 rows)
+
+                                                 QUERY PLAN                                                 
+------------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=1.72..195.97 rows=1 width=146)
+   ->  Nested Loop  (cost=1.29..188.38 rows=1 width=64)
+         ->  Nested Loop  (cost=0.86..143.20 rows=6 width=19)
+               ->  Index Scan using author_name_key on author  (cost=0.43..8.45 rows=1 width=19)
+                     Index Cond: (name = 'Wei Wang'::text)
+               ->  Index Scan using pub_author_aid_index on pub_author  (cost=0.43..134.39 rows=36 width=8)
+                     Index Cond: (aid = author.aid)
+         ->  Index Scan using inproceedings_pkey on inproceedings  (cost=0.43..7.52 rows=1 width=45)
+               Index Cond: (pubid = pub_author.pubid)
+               Filter: (booktitle = 'CSCWD'::text)
+   ->  Index Scan using publication_pkey on publication  (cost=0.43..7.58 rows=1 width=90)
+         Index Cond: (pubid = pub_author.pubid)
+         Filter: ((year = 2009) AND (type = 'conf'::text))
+(13 rows)
+
+DROP VIEW
+DROP VIEW
+CREATE VIEW
+CREATE VIEW
+DROP VIEW
+CREATE VIEW
+                                                                     QUERY PLAN                                                                     
+----------------------------------------------------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=30280.08..62794.31 rows=200 width=15)
+   ->  Subquery Scan on p10k5  (cost=30279.65..61122.81 rows=200 width=4)
+         ->  HashSetOp Intersect  (cost=30279.65..61120.81 rows=200 width=4)
+               ->  Append  (cost=30279.65..61111.55 rows=3703 width=4)
+                     ->  Subquery Scan on "*SELECT* 1"  (cost=30279.65..30362.56 rows=2551 width=4)
+                           ->  Subquery Scan on pvldb_4  (cost=30279.65..30337.05 rows=2551 width=4)
+                                 ->  HashAggregate  (cost=30279.65..30311.54 rows=2551 width=4)
+                                       Filter: (count(pub_author.aid) >= 10)
+                                       ->  Nested Loop  (cost=0.43..30260.52 rows=2551 width=4)
+                                             ->  Seq Scan on article  (cost=0.00..27731.26 rows=556 width=4)
+                                                   Filter: (journal = 'PVLDB'::text)
+                                             ->  Index Only Scan using pub_author_pkey on pub_author  (cost=0.43..4.50 rows=5 width=8)
+                                                   Index Cond: (pubid = article.pubid)
+                     ->  Subquery Scan on "*SELECT* 2"  (cost=30711.55..30748.99 rows=1152 width=4)
+                           ->  Subquery Scan on kdd_4a  (cost=30711.55..30737.47 rows=1152 width=4)
+                                 ->  HashAggregate  (cost=30711.55..30725.95 rows=1152 width=4)
+                                       Filter: (count(*) >= 5)
+                                       ->  Nested Loop  (cost=0.43..30702.91 rows=1152 width=4)
+                                             ->  Seq Scan on inproceedings  (cost=0.00..29556.08 rows=251 width=4)
+                                                   Filter: (booktitle = 'KDD'::text)
+                                             ->  Index Only Scan using pub_author_pkey on pub_author pub_author_1  (cost=0.43..4.52 rows=5 width=8)
+                                                   Index Cond: (pubid = inproceedings.pubid)
+   ->  Index Scan using author_pkey on author  (cost=0.43..8.35 rows=1 width=19)
+         Index Cond: (aid = p10k5.aid)
+(24 rows)
+
+DROP VIEW
+CREATE VIEW
+                                                                     QUERY PLAN                                                                     
+----------------------------------------------------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=30280.08..62788.55 rows=200 width=15)
+   ->  Subquery Scan on p10k0  (cost=30279.65..61117.05 rows=200 width=4)
+         ->  HashSetOp Except  (cost=30279.65..61115.05 rows=200 width=4)
+               ->  Append  (cost=30279.65..61105.79 rows=3703 width=4)
+                     ->  Subquery Scan on "*SELECT* 1"  (cost=30279.65..30362.56 rows=2551 width=4)
+                           ->  Subquery Scan on pvldb_4  (cost=30279.65..30337.05 rows=2551 width=4)
+                                 ->  HashAggregate  (cost=30279.65..30311.54 rows=2551 width=4)
+                                       Filter: (count(pub_author.aid) >= 10)
+                                       ->  Nested Loop  (cost=0.43..30260.52 rows=2551 width=4)
+                                             ->  Seq Scan on article  (cost=0.00..27731.26 rows=556 width=4)
+                                                   Filter: (journal = 'PVLDB'::text)
+                                             ->  Index Only Scan using pub_author_pkey on pub_author  (cost=0.43..4.50 rows=5 width=8)
+                                                   Index Cond: (pubid = article.pubid)
+                     ->  Subquery Scan on "*SELECT* 2"  (cost=30708.67..30743.23 rows=1152 width=4)
+                           ->  Subquery Scan on kdd_4a  (cost=30708.67..30731.71 rows=1152 width=4)
+                                 ->  HashAggregate  (cost=30708.67..30720.19 rows=1152 width=4)
+                                       ->  Nested Loop  (cost=0.43..30702.91 rows=1152 width=4)
+                                             ->  Seq Scan on inproceedings  (cost=0.00..29556.08 rows=251 width=4)
+                                                   Filter: (booktitle = 'KDD'::text)
+                                             ->  Index Only Scan using pub_author_pkey on pub_author pub_author_1  (cost=0.43..4.52 rows=5 width=8)
+                                                   Index Cond: (pubid = inproceedings.pubid)
+   ->  Index Scan using author_pkey on author  (cost=0.43..8.35 rows=1 width=19)
+         Index Cond: (aid = p10k0.aid)
+(23 rows)
+
+DROP VIEW
+DROP VIEW
+DROP VIEW
+DROP VIEW
+DROP VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+DROP VIEW
+DROP VIEW
+DROP VIEW
+DROP VIEW
+DROP VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+                                                                      QUERY PLAN                                                                      
+------------------------------------------------------------------------------------------------------------------------------------------------------
+ Append  (cost=511953.73..6671277.55 rows=1111294 width=47)
+   ->  Merge Join  (cost=511953.73..571676.74 rows=56345 width=15)
+         Merge Cond: (pub_author.aid = author.aid)
+         InitPlan 1 (returns $1)
+           ->  Aggregate  (cost=256821.82..256821.83 rows=1 width=8)
+                 ->  GroupAggregate  (cost=255131.47..256117.51 rows=56345 width=8)
+                       ->  Sort  (cost=255131.47..255272.33 rows=56345 width=8)
+                             Sort Key: pub_author_5.aid
+                             ->  Nested Loop  (cost=0.43..249911.79 rows=56345 width=8)
+                                   ->  Seq Scan on publication publication_5  (cost=0.00..142071.51 rows=25915 width=4)
+                                         Filter: ((year >= 1970) AND (year <= 1979))
+                                   ->  Index Only Scan using pub_author_pkey on pub_author pub_author_5  (cost=0.43..4.11 rows=5 width=8)
+                                         Index Cond: (pubid = publication_5.pubid)
+         ->  GroupAggregate  (cost=255131.47..256399.23 rows=56345 width=8)
+               Filter: (count(publication.pubid) = $1)
+               ->  Sort  (cost=255131.47..255272.33 rows=56345 width=8)
+                     Sort Key: pub_author.aid
+                     ->  Nested Loop  (cost=0.43..249911.79 rows=56345 width=8)
+                           ->  Seq Scan on publication  (cost=0.00..142071.51 rows=25915 width=4)
+                                 Filter: ((year >= 1970) AND (year <= 1979))
+                           ->  Index Only Scan using pub_author_pkey on pub_author  (cost=0.43..4.11 rows=5 width=8)
+                                 Index Cond: (pubid = publication.pubid)
+         ->  Index Scan using author_pkey on author  (cost=0.43..53069.56 rows=1647342 width=19)
+   ->  Merge Join  (cost=935136.92..1002044.09 rows=215993 width=15)
+         Merge Cond: (pub_author_1.aid = author_1.aid)
+         InitPlan 2 (returns $3)
+           ->  Aggregate  (cost=470808.14..470808.15 rows=1 width=8)
+                 ->  GroupAggregate  (cost=464328.35..468108.22 rows=215993 width=8)
+                       ->  Sort  (cost=464328.35..464868.33 rows=215993 width=8)
+                             Sort Key: pub_author_6.aid
+                             ->  Merge Join  (cost=151702.06..442236.69 rows=215993 width=8)
+                                   Merge Cond: (pub_author_6.pubid = publication_6.pubid)
+                                   ->  Index Only Scan using pub_author_pkey on pub_author pub_author_6  (cost=0.43..261860.67 rows=10083749 width=8)
+                                   ->  Materialize  (cost=151678.45..152175.16 rows=99342 width=4)
+                                         ->  Sort  (cost=151678.45..151926.81 rows=99342 width=4)
+                                               Sort Key: publication_6.pubid
+                                               ->  Seq Scan on publication publication_6  (cost=0.00..142071.51 rows=99342 width=4)
+                                                     Filter: ((year >= 1980) AND (year <= 1989))
+         ->  GroupAggregate  (cost=464328.35..469188.19 rows=215993 width=8)
+               Filter: (count(publication_1.pubid) = $3)
+               ->  Sort  (cost=464328.35..464868.33 rows=215993 width=8)
+                     Sort Key: pub_author_1.aid
+                     ->  Merge Join  (cost=151702.06..442236.69 rows=215993 width=8)
+                           Merge Cond: (pub_author_1.pubid = publication_1.pubid)
+                           ->  Index Only Scan using pub_author_pkey on pub_author pub_author_1  (cost=0.43..261860.67 rows=10083749 width=8)
+                           ->  Materialize  (cost=151678.45..152175.16 rows=99342 width=4)
+                                 ->  Sort  (cost=151678.45..151926.81 rows=99342 width=4)
+                                       Sort Key: publication_1.pubid
+                                       ->  Seq Scan on publication publication_1  (cost=0.00..142071.51 rows=99342 width=4)
+                                             Filter: ((year >= 1980) AND (year <= 1989))
+         ->  Index Scan using author_pkey on author author_1  (cost=0.43..53069.56 rows=1647342 width=19)
+   ->  Merge Join  (cost=1144328.74..1219026.79 rows=279652 width=15)
+         Merge Cond: (pub_author_2.aid = author_2.aid)
+         InitPlan 3 (returns $4)
+           ->  Aggregate  (cost=578206.26..578206.27 rows=1 width=8)
+                 ->  GroupAggregate  (cost=566122.04..574710.61 rows=279652 width=8)
+                       ->  Sort  (cost=566122.04..568052.72 rows=772274 width=8)
+                             Sort Key: pub_author_7.aid
+                             ->  Hash Join  (cost=147899.42..469479.46 rows=772274 width=8)
+                                   Hash Cond: (pub_author_7.pubid = publication_7.pubid)
+                                   ->  Seq Scan on pub_author pub_author_7  (cost=0.00..145456.49 rows=10083749 width=8)
+                                   ->  Hash  (cost=142071.51..142071.51 rows=355193 width=4)
+                                         ->  Seq Scan on publication publication_7  (cost=0.00..142071.51 rows=355193 width=4)
+                                               Filter: ((year >= 1990) AND (year <= 1999))
+         ->  GroupAggregate  (cost=566122.04..577340.43 rows=279652 width=8)
+               Filter: (count(publication_2.pubid) = $4)
+               ->  Sort  (cost=566122.04..568052.72 rows=772274 width=8)
+                     Sort Key: pub_author_2.aid
+                     ->  Hash Join  (cost=147899.42..469479.46 rows=772274 width=8)
+                           Hash Cond: (pub_author_2.pubid = publication_2.pubid)
+                           ->  Seq Scan on pub_author pub_author_2  (cost=0.00..145456.49 rows=10083749 width=8)
+                           ->  Hash  (cost=142071.51..142071.51 rows=355193 width=4)
+                                 ->  Seq Scan on publication publication_2  (cost=0.00..142071.51 rows=355193 width=4)
+                                       Filter: ((year >= 1990) AND (year <= 1999))
+         ->  Index Scan using author_pkey on author author_2  (cost=0.43..53069.56 rows=1647342 width=19)
+   ->  Merge Join  (cost=1861106.44..1955718.42 rows=279652 width=15)
+         Merge Cond: (pub_author_3.aid = author_3.aid)
+         InitPlan 4 (returns $5)
+           ->  Aggregate  (cost=944062.84..944062.85 rows=1 width=8)
+                 ->  GroupAggregate  (cost=917043.16..940567.19 rows=279652 width=8)
+                       ->  Sort  (cost=917043.16..923952.33 rows=2763668 width=8)
+                             Sort Key: pub_author_8.aid
+                             ->  Hash Join  (cost=162926.24..507998.21 rows=2763668 width=8)
+                                   Hash Cond: (pub_author_8.pubid = publication_8.pubid)
+                                   ->  Seq Scan on pub_author pub_author_8  (cost=0.00..145456.49 rows=10083749 width=8)
+                                   ->  Hash  (cost=142071.51..142071.51 rows=1271098 width=4)
+                                         ->  Seq Scan on publication publication_8  (cost=0.00..142071.51 rows=1271098 width=4)
+                                               Filter: ((year >= 2000) AND (year <= 2009))
+         ->  GroupAggregate  (cost=917043.16..948175.49 rows=279652 width=8)
+               Filter: (count(publication_3.pubid) = $5)
+               ->  Sort  (cost=917043.16..923952.33 rows=2763668 width=8)
+                     Sort Key: pub_author_3.aid
+                     ->  Hash Join  (cost=162926.24..507998.21 rows=2763668 width=8)
+                           Hash Cond: (pub_author_3.pubid = publication_3.pubid)
+                           ->  Seq Scan on pub_author pub_author_3  (cost=0.00..145456.49 rows=10083749 width=8)
+                           ->  Hash  (cost=142071.51..142071.51 rows=1271098 width=4)
+                                 ->  Seq Scan on publication publication_3  (cost=0.00..142071.51 rows=1271098 width=4)
+                                       Filter: ((year >= 2000) AND (year <= 2009))
+         ->  Index Scan using author_pkey on author author_3  (cost=0.43..53069.56 rows=1647342 width=19)
+   ->  Merge Join  (cost=1818288.62..1911698.57 rows=279652 width=15)
+         Merge Cond: (pub_author_4.aid = author_4.aid)
+         InitPlan 5 (returns $6)
+           ->  Aggregate  (cost=922203.17..922203.18 rows=1 width=8)
+                 ->  GroupAggregate  (cost=896085.01..918707.52 rows=279652 width=8)
+                       ->  Sort  (cost=896085.01..902693.67 rows=2643465 width=8)
+                             Sort Key: pub_author_9.aid
+                             ->  Hash Join  (cost=162019.17..505673.12 rows=2643465 width=8)
+                                   Hash Cond: (pub_author_9.pubid = publication_9.pubid)
+                                   ->  Seq Scan on pub_author pub_author_9  (cost=0.00..145456.49 rows=10083749 width=8)
+                                   ->  Hash  (cost=142071.51..142071.51 rows=1215813 width=4)
+                                         ->  Seq Scan on publication publication_9  (cost=0.00..142071.51 rows=1215813 width=4)
+                                               Filter: ((year >= 2010) AND (year <= 2019))
+         ->  GroupAggregate  (cost=896085.01..926015.31 rows=279652 width=8)
+               Filter: (count(publication_4.pubid) = $6)
+               ->  Sort  (cost=896085.01..902693.67 rows=2643465 width=8)
+                     Sort Key: pub_author_4.aid
+                     ->  Hash Join  (cost=162019.17..505673.12 rows=2643465 width=8)
+                           Hash Cond: (pub_author_4.pubid = publication_4.pubid)
+                           ->  Seq Scan on pub_author pub_author_4  (cost=0.00..145456.49 rows=10083749 width=8)
+                           ->  Hash  (cost=142071.51..142071.51 rows=1215813 width=4)
+                                 ->  Seq Scan on publication publication_4  (cost=0.00..142071.51 rows=1215813 width=4)
+                                       Filter: ((year >= 2010) AND (year <= 2019))
+         ->  Index Scan using author_pkey on author author_4  (cost=0.43..53069.56 rows=1647342 width=19)
+(123 rows)
+
+DROP VIEW
+DROP VIEW
+CREATE VIEW
+CREATE VIEW
+                                                                    QUERY PLAN                                                                     
+---------------------------------------------------------------------------------------------------------------------------------------------------
+ Hash Join  (cost=42691729.05..42712656.74 rows=279652 width=15)
+   Hash Cond: (collaborator_count.aid = author.aid)
+   InitPlan 1 (returns $0)
+     ->  Aggregate  (cost=21204857.57..21204857.58 rows=1 width=8)
+           ->  Sort  (cost=21200662.79..21201361.92 rows=279652 width=8)
+                 Sort Key: (count(DISTINCT b_1.aid))
+                 ->  GroupAggregate  (cost=20483207.58..21171538.19 rows=279652 width=8)
+                       ->  Sort  (cost=20483207.58..20711718.94 rows=91404545 width=8)
+                             Sort Key: a_1.aid
+                             ->  Merge Join  (cost=0.87..2148518.11 rows=91404545 width=8)
+                                   Merge Cond: (a_1.pubid = b_1.pubid)
+                                   Join Filter: (a_1.aid <> b_1.aid)
+                                   ->  Index Only Scan using pub_author_pkey on pub_author a_1  (cost=0.43..261860.67 rows=10083749 width=8)
+                                   ->  Materialize  (cost=0.43..287070.04 rows=10083749 width=8)
+                                         ->  Index Only Scan using pub_author_pkey on pub_author b_1  (cost=0.43..261860.67 rows=10083749 width=8)
+   ->  Subquery Scan on collaborator_count  (cost=21429873.28..21433368.93 rows=279652 width=4)
+         ->  Sort  (cost=21429873.28..21430572.41 rows=279652 width=8)
+               Sort Key: (count(DISTINCT b.aid))
+               ->  GroupAggregate  (cost=20483207.58..21400748.68 rows=279652 width=8)
+                     Filter: (count(DISTINCT b.aid) = $0)
+                     ->  Sort  (cost=20483207.58..20711718.94 rows=91404545 width=8)
+                           Sort Key: a.aid
+                           ->  Merge Join  (cost=0.87..2148518.11 rows=91404545 width=8)
+                                 Merge Cond: (a.pubid = b.pubid)
+                                 Join Filter: (a.aid <> b.aid)
+                                 ->  Index Only Scan using pub_author_pkey on pub_author a  (cost=0.43..261860.67 rows=10083749 width=8)
+                                 ->  Materialize  (cost=0.43..287070.04 rows=10083749 width=8)
+                                       ->  Index Only Scan using pub_author_pkey on pub_author b  (cost=0.43..261860.67 rows=10083749 width=8)
+   ->  Hash  (cost=26753.42..26753.42 rows=1647342 width=19)
+         ->  Seq Scan on author  (cost=0.00..26753.42 rows=1647342 width=19)
+(30 rows)
+
+DROP VIEW
+CREATE VIEW
+                                                           QUERY PLAN                                                            
+---------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=2383636.90..2384336.03 rows=279652 width=23)
+   Sort Key: (sum(publication.total_page))
+   ->  Merge Join  (cost=2179052.00..2346864.80 rows=279652 width=23)
+         Merge Cond: (pub_author.aid = author.aid)
+         ->  GroupAggregate  (cost=2179051.57..2283384.71 rows=279652 width=8)
+               Filter: (sum(publication.total_page) >= 4000)
+               ->  Sort  (cost=2179051.57..2204260.95 rows=10083749 width=8)
+                     Sort Key: pub_author.aid
+                     ->  Merge Join  (cost=24.04..592437.81 rows=10083749 width=8)
+                           Merge Cond: (publication.pubid = pub_author.pubid)
+                           ->  Index Scan using publication_pkey on publication  (cost=0.43..192950.33 rows=4637834 width=8)
+                           ->  Index Only Scan using pub_author_pkey on pub_author  (cost=0.43..261860.67 rows=10083749 width=8)
+         ->  Index Scan using author_pkey on author  (cost=0.43..53069.56 rows=1647342 width=19)
+(13 rows)
+
+DROP VIEW
+DROP VIEW
+CREATE VIEW
+CREATE VIEW
+                                                                  QUERY PLAN                                                                  
+----------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=1179532.07..1179765.11 rows=93217 width=23)
+   Sort Key: pub_rank_9.rank
+   ->  Merge Join  (cost=1111104.51..1169923.30 rows=93217 width=23)
+         Merge Cond: (author.aid = pub_rank_9.aid)
+         ->  Index Scan using author_pkey on author  (cost=0.43..53069.56 rows=1647342 width=19)
+         ->  Materialize  (cost=1111104.09..1111570.17 rows=93217 width=12)
+               ->  Sort  (cost=1111104.09..1111337.13 rows=93217 width=12)
+                     Sort Key: pub_rank_9.aid
+                     ->  Subquery Scan on pub_rank_9  (cost=1093424.25..1101813.81 rows=93217 width=12)
+                           Filter: (pub_rank_9.rank <= 10)
+                           ->  WindowAgg  (cost=1093424.25..1098318.16 rows=279652 width=12)
+                                 ->  Sort  (cost=1093424.25..1094123.38 rows=279652 width=12)
+                                       Sort Key: pub_count_9.pub_num
+                                       ->  Subquery Scan on pub_count_9  (cost=1030600.63..1063344.15 rows=279652 width=12)
+                                             ->  GroupAggregate  (cost=1030600.63..1060547.63 rows=279652 width=4)
+                                                   ->  Sort  (cost=1030600.63..1039650.79 rows=3620065 width=4)
+                                                         Sort Key: pub_author.aid
+                                                         ->  Hash Join  (cost=157793.20..487757.77 rows=3620065 width=4)
+                                                               Hash Cond: (pub_author.pubid = publication.pubid)
+                                                               ->  Seq Scan on pub_author  (cost=0.00..145456.49 rows=10083749 width=8)
+                                                               ->  Hash  (cost=130476.93..130476.93 rows=1664982 width=4)
+                                                                     ->  Seq Scan on publication  (cost=0.00..130476.93 rows=1664982 width=4)
+                                                                           Filter: (type = 'conf'::text)
+(23 rows)
+
+DROP INDEX
+CREATE INDEX
+ANALYZE
+DROP VIEW
+DROP VIEW
+CREATE VIEW
+CREATE VIEW
+                                                                             QUERY PLAN                                                                              
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=2371567.01..2371783.21 rows=86481 width=23)
+   Sort Key: pub_rank_2b.rank
+   ->  Merge Join  (cost=2304000.12..2362701.03 rows=86481 width=23)
+         Merge Cond: (author.aid = pub_rank_2b.aid)
+         ->  Index Scan using author_pkey on author  (cost=0.43..53069.56 rows=1647342 width=19)
+         ->  Materialize  (cost=2303999.70..2304432.10 rows=86481 width=12)
+               ->  Sort  (cost=2303999.70..2304215.90 rows=86481 width=12)
+                     Sort Key: pub_rank_2b.aid
+                     ->  Subquery Scan on pub_rank_2b  (cost=2287644.39..2295427.71 rows=86481 width=12)
+                           Filter: (pub_rank_2b.rank <= 10)
+                           ->  WindowAgg  (cost=2287644.39..2292184.66 rows=259444 width=12)
+                                 ->  Sort  (cost=2287644.39..2288293.00 rows=259444 width=12)
+                                       Sort Key: pub_count_2b.total_page
+                                       ->  Subquery Scan on pub_count_2b  (cost=2179062.31..2259879.31 rows=259444 width=12)
+                                             ->  GroupAggregate  (cost=2179062.31..2257284.87 rows=259444 width=8)
+                                                   ->  Sort  (cost=2179062.31..2204271.68 rows=10083749 width=8)
+                                                         Sort Key: pub_author.aid
+                                                         ->  Merge Join  (cost=24.59..592448.55 rows=10083749 width=8)
+                                                               Merge Cond: (publication.pubid = pub_author.pubid)
+                                                               ->  Index Scan using publication_pkey on publication  (cost=0.43..192955.57 rows=4639081 width=8)
+                                                               ->  Index Only Scan using pub_author_pkey on pub_author  (cost=0.43..261860.67 rows=10083749 width=8)
+(21 rows)
+
+DROP VIEW
+CREATE VIEW
+                                                       QUERY PLAN                                                        
+-------------------------------------------------------------------------------------------------------------------------
+ Nested Loop Left Join  (cost=9.74..184806.77 rows=1 width=312)
+   ->  Nested Loop Left Join  (cost=9.32..184799.17 rows=1 width=267)
+         Join Filter: (publication.pubid = incollection.pubid)
+         ->  Nested Loop Left Join  (cost=9.32..183687.44 rows=1 width=176)
+               Join Filter: (publication.pubid = book.pubid)
+               ->  Nested Loop Left Join  (cost=9.32..183332.57 rows=1 width=143)
+                     ->  Nested Loop  (cost=8.89..183324.98 rows=1 width=106)
+                           ->  Hash Join  (cost=8.46..183279.07 rows=6 width=19)
+                                 Hash Cond: (pub_author.aid = author.aid)
+                                 ->  Seq Scan on pub_author  (cost=0.00..145456.49 rows=10083749 width=8)
+                                 ->  Hash  (cost=8.45..8.45 rows=1 width=19)
+                                       ->  Index Scan using author_name_key on author  (cost=0.43..8.45 rows=1 width=19)
+                                             Index Cond: (name = 'Yan Zhang'::text)
+                           ->  Index Scan using publication_pkey on publication  (cost=0.43..7.64 rows=1 width=91)
+                                 Index Cond: (pubid = pub_author.pubid)
+                                 Filter: (year = 2012)
+                     ->  Index Scan using article_pkey on article  (cost=0.43..7.58 rows=1 width=37)
+                           Index Cond: (publication.pubid = pubid)
+               ->  Seq Scan on book  (cost=0.00..208.83 rows=11683 width=33)
+         ->  Seq Scan on incollection  (cost=0.00..674.66 rows=34966 width=91)
+   ->  Index Scan using inproceedings_pkey on inproceedings  (cost=0.43..7.59 rows=1 width=45)
+         Index Cond: (publication.pubid = pubid)
+(22 rows)
+
+DROP VIEW
+CREATE VIEW
+                                               QUERY PLAN                                                
+---------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=1.29..30251.63 rows=1 width=139)
+   ->  Nested Loop  (cost=0.86..30244.03 rows=1 width=56)
+         ->  Index Scan using author_name_key on author  (cost=0.43..8.45 rows=1 width=19)
+               Index Cond: (name = 'Wei Wang'::text)
+         ->  Nested Loop  (cost=0.43..30229.99 rows=559 width=45)
+               ->  Seq Scan on article  (cost=0.00..27731.26 rows=559 width=37)
+                     Filter: (journal = 'CSCWD'::text)
+               ->  Index Only Scan using pub_author_pkey on pub_author  (cost=0.43..4.46 rows=1 width=8)
+                     Index Cond: ((pubid = article.pubid) AND (aid = author.aid))
+   ->  Index Scan using publication_pkey on publication  (cost=0.43..7.59 rows=1 width=91)
+         Index Cond: (pubid = pub_author.pubid)
+         Filter: ((year = 2009) AND (type = 'conf'::text))
+(12 rows)
+
+                                               QUERY PLAN                                                
+---------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=1.29..41212.46 rows=1 width=147)
+   ->  Nested Loop  (cost=0.86..41204.88 rows=1 width=64)
+         Join Filter: (pub_author.aid = author.aid)
+         ->  Index Scan using author_name_key on author  (cost=0.43..8.45 rows=1 width=19)
+               Index Cond: (name = 'Wei Wang'::text)
+         ->  Nested Loop  (cost=0.43..41045.75 rows=12054 width=53)
+               ->  Seq Scan on inproceedings  (cost=0.00..29556.08 rows=2608 width=45)
+                     Filter: (booktitle = 'CSCWD'::text)
+               ->  Index Only Scan using pub_author_pkey on pub_author  (cost=0.43..4.36 rows=5 width=8)
+                     Index Cond: (pubid = inproceedings.pubid)
+   ->  Index Scan using publication_pkey on publication  (cost=0.43..7.58 rows=1 width=91)
+         Index Cond: (pubid = pub_author.pubid)
+         Filter: ((year = 2009) AND (type = 'conf'::text))
+(13 rows)
+
+DROP VIEW
+DROP VIEW
+CREATE VIEW
+CREATE VIEW
+DROP VIEW
+CREATE VIEW
+                                                                        QUERY PLAN                                                                        
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=30294.09..77047.38 rows=200 width=15)
+   ->  Subquery Scan on p10k5  (cost=30293.66..75375.88 rows=200 width=4)
+         ->  HashSetOp Intersect  (cost=30293.66..75373.88 rows=200 width=4)
+               ->  Append  (cost=30293.66..75331.01 rows=17147 width=4)
+                     ->  Subquery Scan on "*SELECT* 1"  (cost=30293.66..30377.64 rows=2584 width=4)
+                           ->  Subquery Scan on pvldb_4  (cost=30293.66..30351.80 rows=2584 width=4)
+                                 ->  HashAggregate  (cost=30293.66..30325.96 rows=2584 width=4)
+                                       Filter: (count(pub_author.aid) >= 10)
+                                       ->  Nested Loop  (cost=0.43..30274.28 rows=2584 width=4)
+                                             ->  Seq Scan on article  (cost=0.00..27731.26 rows=559 width=4)
+                                                   Filter: (journal = 'PVLDB'::text)
+                                             ->  Index Only Scan using pub_author_pkey on pub_author  (cost=0.43..4.50 rows=5 width=8)
+                                                   Index Cond: (pubid = article.pubid)
+                     ->  Subquery Scan on "*SELECT* 2"  (cost=44334.44..44953.37 rows=14563 width=4)
+                           ->  Subquery Scan on kdd_4a  (cost=44334.44..44807.74 rows=14563 width=4)
+                                 ->  GroupAggregate  (cost=44334.44..44662.11 rows=14563 width=4)
+                                       Filter: (count(*) >= 5)
+                                       ->  Sort  (cost=44334.44..44370.85 rows=14563 width=4)
+                                             Sort Key: pub_author_1.aid
+                                             ->  Nested Loop  (cost=0.43..43327.41 rows=14563 width=4)
+                                                   ->  Seq Scan on inproceedings  (cost=0.00..29556.08 rows=3151 width=4)
+                                                         Filter: (booktitle = 'KDD'::text)
+                                                   ->  Index Only Scan using pub_author_pkey on pub_author pub_author_1  (cost=0.43..4.32 rows=5 width=8)
+                                                         Index Cond: (pubid = inproceedings.pubid)
+   ->  Index Scan using author_pkey on author  (cost=0.43..8.35 rows=1 width=19)
+         Index Cond: (aid = p10k5.aid)
+(26 rows)
+
+DROP VIEW
+CREATE VIEW
+                                                                     QUERY PLAN                                                                     
+----------------------------------------------------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=30294.09..75931.12 rows=200 width=15)
+   ->  Subquery Scan on p10k0  (cost=30293.66..74259.62 rows=200 width=4)
+         ->  HashSetOp Except  (cost=30293.66..74257.62 rows=200 width=4)
+               ->  Append  (cost=30293.66..74214.75 rows=17147 width=4)
+                     ->  Subquery Scan on "*SELECT* 1"  (cost=30293.66..30377.64 rows=2584 width=4)
+                           ->  Subquery Scan on pvldb_4  (cost=30293.66..30351.80 rows=2584 width=4)
+                                 ->  HashAggregate  (cost=30293.66..30325.96 rows=2584 width=4)
+                                       Filter: (count(pub_author.aid) >= 10)
+                                       ->  Nested Loop  (cost=0.43..30274.28 rows=2584 width=4)
+                                             ->  Seq Scan on article  (cost=0.00..27731.26 rows=559 width=4)
+                                                   Filter: (journal = 'PVLDB'::text)
+                                             ->  Index Only Scan using pub_author_pkey on pub_author  (cost=0.43..4.50 rows=5 width=8)
+                                                   Index Cond: (pubid = article.pubid)
+                     ->  Subquery Scan on "*SELECT* 2"  (cost=43400.23..43837.11 rows=14563 width=4)
+                           ->  Subquery Scan on kdd_4a  (cost=43400.23..43691.49 rows=14563 width=4)
+                                 ->  HashAggregate  (cost=43400.23..43545.86 rows=14563 width=4)
+                                       ->  Nested Loop  (cost=0.43..43327.41 rows=14563 width=4)
+                                             ->  Seq Scan on inproceedings  (cost=0.00..29556.08 rows=3151 width=4)
+                                                   Filter: (booktitle = 'KDD'::text)
+                                             ->  Index Only Scan using pub_author_pkey on pub_author pub_author_1  (cost=0.43..4.32 rows=5 width=8)
+                                                   Index Cond: (pubid = inproceedings.pubid)
+   ->  Index Scan using author_pkey on author  (cost=0.43..8.35 rows=1 width=19)
+         Index Cond: (aid = p10k0.aid)
+(23 rows)
+
+DROP VIEW
+DROP VIEW
+DROP VIEW
+DROP VIEW
+DROP VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+DROP VIEW
+DROP VIEW
+DROP VIEW
+DROP VIEW
+DROP VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+                                                                      QUERY PLAN                                                                      
+------------------------------------------------------------------------------------------------------------------------------------------------------
+ Append  (cost=514936.70..6713882.22 rows=1042896 width=47)
+   ->  Merge Join  (cost=514936.70..574692.02 rows=57063 width=15)
+         Merge Cond: (pub_author.aid = author.aid)
+         InitPlan 1 (returns $1)
+           ->  Aggregate  (cost=258324.08..258324.09 rows=1 width=8)
+                 ->  GroupAggregate  (cost=256612.19..257610.79 rows=57063 width=8)
+                       ->  Sort  (cost=256612.19..256754.85 rows=57063 width=8)
+                             Sort Key: pub_author_5.aid
+                             ->  Nested Loop  (cost=0.43..251323.63 rows=57063 width=8)
+                                   ->  Seq Scan on publication publication_5  (cost=0.00..142090.21 rows=26252 width=4)
+                                         Filter: ((year >= 1970) AND (year <= 1979))
+                                   ->  Index Only Scan using pub_author_pkey on pub_author pub_author_5  (cost=0.43..4.11 rows=5 width=8)
+                                         Index Cond: (pubid = publication_5.pubid)
+         ->  GroupAggregate  (cost=256612.19..257896.11 rows=57063 width=8)
+               Filter: (count(publication.pubid) = $1)
+               ->  Sort  (cost=256612.19..256754.85 rows=57063 width=8)
+                     Sort Key: pub_author.aid
+                     ->  Nested Loop  (cost=0.43..251323.63 rows=57063 width=8)
+                           ->  Seq Scan on publication  (cost=0.00..142090.21 rows=26252 width=4)
+                                 Filter: ((year >= 1970) AND (year <= 1979))
+                           ->  Index Only Scan using pub_author_pkey on pub_author  (cost=0.43..4.11 rows=5 width=8)
+                                 Index Cond: (pubid = publication.pubid)
+         ->  Index Scan using author_pkey on author  (cost=0.43..53069.56 rows=1647342 width=19)
+   ->  Merge Join  (cost=931978.56..998503.59 rows=207501 width=15)
+         Merge Cond: (pub_author_1.aid = author_1.aid)
+         InitPlan 2 (returns $3)
+           ->  Aggregate  (cost=469101.58..469101.59 rows=1 width=8)
+                 ->  GroupAggregate  (cost=462876.55..466507.81 rows=207501 width=8)
+                       ->  Sort  (cost=462876.55..463395.30 rows=207501 width=8)
+                             Sort Key: pub_author_6.aid
+                             ->  Merge Join  (cost=151292.20..441712.85 rows=207501 width=8)
+                                   Merge Cond: (pub_author_6.pubid = publication_6.pubid)
+                                   ->  Index Only Scan using pub_author_pkey on pub_author pub_author_6  (cost=0.43..261860.67 rows=10083749 width=8)
+                                   ->  Materialize  (cost=151291.68..151768.99 rows=95462 width=4)
+                                         ->  Sort  (cost=151291.68..151530.34 rows=95462 width=4)
+                                               Sort Key: publication_6.pubid
+                                               ->  Seq Scan on publication publication_6  (cost=0.00..142090.21 rows=95462 width=4)
+                                                     Filter: ((year >= 1980) AND (year <= 1989))
+         ->  GroupAggregate  (cost=462876.55..467545.32 rows=207501 width=8)
+               Filter: (count(publication_1.pubid) = $3)
+               ->  Sort  (cost=462876.55..463395.30 rows=207501 width=8)
+                     Sort Key: pub_author_1.aid
+                     ->  Merge Join  (cost=151292.20..441712.85 rows=207501 width=8)
+                           Merge Cond: (pub_author_1.pubid = publication_1.pubid)
+                           ->  Index Only Scan using pub_author_pkey on pub_author pub_author_1  (cost=0.43..261860.67 rows=10083749 width=8)
+                           ->  Materialize  (cost=151291.68..151768.99 rows=95462 width=4)
+                                 ->  Sort  (cost=151291.68..151530.34 rows=95462 width=4)
+                                       Sort Key: publication_1.pubid
+                                       ->  Seq Scan on publication publication_1  (cost=0.00..142090.21 rows=95462 width=4)
+                                             Filter: ((year >= 1980) AND (year <= 1989))
+         ->  Index Scan using author_pkey on author author_1  (cost=0.43..53069.56 rows=1647342 width=19)
+   ->  Merge Join  (cost=1178510.70..1252802.93 rows=259444 width=15)
+         Merge Cond: (pub_author_2.aid = author_2.aid)
+         InitPlan 3 (returns $4)
+           ->  Aggregate  (cost=595182.95..595182.96 rows=1 width=8)
+                 ->  GroupAggregate  (cost=583327.31..591939.90 rows=259444 width=8)
+                       ->  Sort  (cost=583327.31..585333.36 rows=802421 width=8)
+                             Sort Key: pub_author_7.aid
+                             ->  Hash Join  (cost=148147.69..482688.88 rows=802421 width=8)
+                                   Hash Cond: (pub_author_7.pubid = publication_7.pubid)
+                                   ->  Seq Scan on pub_author pub_author_7  (cost=0.00..145456.49 rows=10083749 width=8)
+                                   ->  Hash  (cost=142090.21..142090.21 rows=369158 width=4)
+                                         ->  Seq Scan on publication publication_7  (cost=0.00..142090.21 rows=369158 width=4)
+                                               Filter: ((year >= 1990) AND (year <= 1999))
+         ->  GroupAggregate  (cost=583327.31..594594.57 rows=259444 width=8)
+               Filter: (count(publication_2.pubid) = $4)
+               ->  Sort  (cost=583327.31..585333.36 rows=802421 width=8)
+                     Sort Key: pub_author_2.aid
+                     ->  Hash Join  (cost=148147.69..482688.88 rows=802421 width=8)
+                           Hash Cond: (pub_author_2.pubid = publication_2.pubid)
+                           ->  Seq Scan on pub_author pub_author_2  (cost=0.00..145456.49 rows=10083749 width=8)
+                           ->  Hash  (cost=142090.21..142090.21 rows=369158 width=4)
+                                 ->  Seq Scan on publication publication_2  (cost=0.00..142090.21 rows=369158 width=4)
+                                       Filter: ((year >= 1990) AND (year <= 1999))
+         ->  Index Scan using author_pkey on author author_2  (cost=0.43..53069.56 rows=1647342 width=19)
+   ->  Merge Join  (cost=1856391.97..1950175.70 rows=259444 width=15)
+         Merge Cond: (pub_author_3.aid = author_3.aid)
+         InitPlan 4 (returns $5)
+           ->  Aggregate  (cost=941432.90..941432.91 rows=1 width=8)
+                 ->  GroupAggregate  (cost=914958.63..938189.85 rows=259444 width=8)
+                       ->  Sort  (cost=914958.63..921837.56 rows=2751570 width=8)
+                             Sort Key: pub_author_8.aid
+                             ->  Hash Join  (cost=162858.64..507788.63 rows=2751570 width=8)
+                                   Hash Cond: (pub_author_8.pubid = publication_8.pubid)
+                                   ->  Seq Scan on pub_author pub_author_8  (cost=0.00..145456.49 rows=10083749 width=8)
+                                   ->  Hash  (cost=142090.21..142090.21 rows=1265874 width=4)
+                                         ->  Seq Scan on publication publication_8  (cost=0.00..142090.21 rows=1265874 width=4)
+                                               Filter: ((year >= 2000) AND (year <= 2009))
+         ->  GroupAggregate  (cost=914958.63..945717.38 rows=259444 width=8)
+               Filter: (count(publication_3.pubid) = $5)
+               ->  Sort  (cost=914958.63..921837.56 rows=2751570 width=8)
+                     Sort Key: pub_author_3.aid
+                     ->  Hash Join  (cost=162858.64..507788.63 rows=2751570 width=8)
+                           Hash Cond: (pub_author_3.pubid = publication_3.pubid)
+                           ->  Seq Scan on pub_author pub_author_3  (cost=0.00..145456.49 rows=10083749 width=8)
+                           ->  Hash  (cost=142090.21..142090.21 rows=1265874 width=4)
+                                 ->  Seq Scan on publication publication_3  (cost=0.00..142090.21 rows=1265874 width=4)
+                                       Filter: ((year >= 2000) AND (year <= 2009))
+         ->  Index Scan using author_pkey on author author_3  (cost=0.43..53069.56 rows=1647342 width=19)
+   ->  Merge Join  (cost=1834120.32..1927279.02 rows=259444 width=15)
+         Merge Cond: (pub_author_4.aid = author_4.aid)
+         InitPlan 5 (returns $6)
+           ->  Aggregate  (cost=930062.69..930062.70 rows=1 width=8)
+                 ->  GroupAggregate  (cost=904057.20..926819.64 rows=259444 width=8)
+                       ->  Sort  (cost=904057.20..910779.86 rows=2689067 width=8)
+                             Sort Key: pub_author_9.aid
+                             ->  Hash Join  (cost=162387.20..506580.17 rows=2689067 width=8)
+                                   Hash Cond: (pub_author_9.pubid = publication_9.pubid)
+                                   ->  Seq Scan on pub_author pub_author_9  (cost=0.00..145456.49 rows=10083749 width=8)
+                                   ->  Hash  (cost=142090.21..142090.21 rows=1237119 width=4)
+                                         ->  Seq Scan on publication publication_9  (cost=0.00..142090.21 rows=1237119 width=4)
+                                               Filter: ((year >= 2010) AND (year <= 2019))
+         ->  GroupAggregate  (cost=904057.20..934190.92 rows=259444 width=8)
+               Filter: (count(publication_4.pubid) = $6)
+               ->  Sort  (cost=904057.20..910779.86 rows=2689067 width=8)
+                     Sort Key: pub_author_4.aid
+                     ->  Hash Join  (cost=162387.20..506580.17 rows=2689067 width=8)
+                           Hash Cond: (pub_author_4.pubid = publication_4.pubid)
+                           ->  Seq Scan on pub_author pub_author_4  (cost=0.00..145456.49 rows=10083749 width=8)
+                           ->  Hash  (cost=142090.21..142090.21 rows=1237119 width=4)
+                                 ->  Seq Scan on publication publication_4  (cost=0.00..142090.21 rows=1237119 width=4)
+                                       Filter: ((year >= 2010) AND (year <= 2019))
+         ->  Index Scan using author_pkey on author author_4  (cost=0.43..53069.56 rows=1647342 width=19)
+(123 rows)
+
+DROP VIEW
+DROP VIEW
+CREATE VIEW
+CREATE VIEW
+                                                                    QUERY PLAN                                                                     
+---------------------------------------------------------------------------------------------------------------------------------------------------
+ Hash Join  (cost=42581106.34..42601219.27 rows=259444 width=15)
+   Hash Cond: (collaborator_count.aid = author.aid)
+   InitPlan 1 (returns $0)
+     ->  Aggregate  (cost=21149701.23..21149701.24 rows=1 width=8)
+           ->  Sort  (cost=21145809.57..21146458.18 rows=259444 width=8)
+                 Sort Key: (count(DISTINCT b_1.aid))
+                 ->  GroupAggregate  (cost=20432489.37..21118929.99 rows=259444 width=8)
+                       ->  Sort  (cost=20432489.37..20660438.10 rows=91179490 width=8)
+                             Sort Key: a_1.aid
+                             ->  Merge Join  (cost=0.87..2144580.08 rows=91179490 width=8)
+                                   Merge Cond: (a_1.pubid = b_1.pubid)
+                                   Join Filter: (a_1.aid <> b_1.aid)
+                                   ->  Index Only Scan using pub_author_pkey on pub_author a_1  (cost=0.43..261860.67 rows=10083749 width=8)
+                                   ->  Materialize  (cost=0.43..287070.04 rows=10083749 width=8)
+                                         ->  Index Only Scan using pub_author_pkey on pub_author b_1  (cost=0.43..261860.67 rows=10083749 width=8)
+   ->  Subquery Scan on collaborator_count  (cost=21374406.91..21377649.96 rows=259444 width=4)
+         ->  Sort  (cost=21374406.91..21375055.52 rows=259444 width=8)
+               Sort Key: (count(DISTINCT b.aid))
+               ->  GroupAggregate  (cost=20432489.37..21347527.32 rows=259444 width=8)
+                     Filter: (count(DISTINCT b.aid) = $0)
+                     ->  Sort  (cost=20432489.37..20660438.10 rows=91179490 width=8)
+                           Sort Key: a.aid
+                           ->  Merge Join  (cost=0.87..2144580.08 rows=91179490 width=8)
+                                 Merge Cond: (a.pubid = b.pubid)
+                                 Join Filter: (a.aid <> b.aid)
+                                 ->  Index Only Scan using pub_author_pkey on pub_author a  (cost=0.43..261860.67 rows=10083749 width=8)
+                                 ->  Materialize  (cost=0.43..287070.04 rows=10083749 width=8)
+                                       ->  Index Only Scan using pub_author_pkey on pub_author b  (cost=0.43..261860.67 rows=10083749 width=8)
+   ->  Hash  (cost=26753.42..26753.42 rows=1647342 width=19)
+         ->  Seq Scan on author  (cost=0.00..26753.42 rows=1647342 width=19)
+(30 rows)
+
+DROP VIEW
+CREATE VIEW
+                                                           QUERY PLAN                                                            
+---------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=2374822.34..2375470.95 rows=259444 width=23)
+   Sort Key: (sum(publication.total_page))
+   ->  Merge Join  (cost=2179062.74..2346168.25 rows=259444 width=23)
+         Merge Cond: (pub_author.aid = author.aid)
+         ->  GroupAggregate  (cost=2179062.31..2283142.85 rows=259444 width=8)
+               Filter: (sum(publication.total_page) >= 4000)
+               ->  Sort  (cost=2179062.31..2204271.68 rows=10083749 width=8)
+                     Sort Key: pub_author.aid
+                     ->  Merge Join  (cost=24.59..592448.55 rows=10083749 width=8)
+                           Merge Cond: (publication.pubid = pub_author.pubid)
+                           ->  Index Scan using publication_pkey on publication  (cost=0.43..192955.57 rows=4639081 width=8)
+                           ->  Index Only Scan using pub_author_pkey on pub_author  (cost=0.43..261860.67 rows=10083749 width=8)
+         ->  Index Scan using author_pkey on author  (cost=0.43..53069.56 rows=1647342 width=19)
+(13 rows)
+
+DROP VIEW
+DROP VIEW
+CREATE VIEW
+CREATE VIEW
+                                                                  QUERY PLAN                                                                  
+----------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=1169706.58..1169922.78 rows=86481 width=23)
+   Sort Key: pub_rank_9.rank
+   ->  Merge Join  (cost=1102139.69..1160840.60 rows=86481 width=23)
+         Merge Cond: (author.aid = pub_rank_9.aid)
+         ->  Index Scan using author_pkey on author  (cost=0.43..53069.56 rows=1647342 width=19)
+         ->  Materialize  (cost=1102139.27..1102571.67 rows=86481 width=12)
+               ->  Sort  (cost=1102139.27..1102355.47 rows=86481 width=12)
+                     Sort Key: pub_rank_9.aid
+                     ->  Subquery Scan on pub_rank_9  (cost=1085783.96..1093567.28 rows=86481 width=12)
+                           Filter: (pub_rank_9.rank <= 10)
+                           ->  WindowAgg  (cost=1085783.96..1090324.23 rows=259444 width=12)
+                                 ->  Sort  (cost=1085783.96..1086432.57 rows=259444 width=12)
+                                       Sort Key: pub_count_9.pub_num
+                                       ->  Subquery Scan on pub_count_9  (cost=1025881.19..1058018.88 rows=259444 width=12)
+                                             ->  GroupAggregate  (cost=1025881.19..1055424.44 rows=259444 width=4)
+                                                   ->  Sort  (cost=1025881.19..1034864.12 rows=3593175 width=4)
+                                                         Sort Key: pub_author.aid
+                                                         ->  Hash Join  (cost=157613.75..487263.42 rows=3593175 width=4)
+                                                               Hash Cond: (pub_author.pubid = publication.pubid)
+                                                               ->  Seq Scan on pub_author  (cost=0.00..145456.49 rows=10083749 width=8)
+                                                               ->  Hash  (cost=130492.51..130492.51 rows=1653059 width=4)
+                                                                     ->  Seq Scan on publication  (cost=0.00..130492.51 rows=1653059 width=4)
+                                                                           Filter: (type = 'conf'::text)
+(23 rows)
+
+DROP INDEX
+CREATE INDEX
+ANALYZE
+DROP VIEW
+CREATE VIEW
+                                                       QUERY PLAN                                                        
+-------------------------------------------------------------------------------------------------------------------------
+ Nested Loop Left Join  (cost=9.74..184806.61 rows=1 width=312)
+   ->  Nested Loop Left Join  (cost=9.32..184799.01 rows=1 width=267)
+         Join Filter: (publication.pubid = incollection.pubid)
+         ->  Nested Loop Left Join  (cost=9.32..183687.27 rows=1 width=175)
+               Join Filter: (publication.pubid = book.pubid)
+               ->  Nested Loop Left Join  (cost=9.32..183332.41 rows=1 width=142)
+                     ->  Nested Loop  (cost=8.89..183324.81 rows=1 width=105)
+                           ->  Hash Join  (cost=8.46..183278.90 rows=6 width=19)
+                                 Hash Cond: (pub_author.aid = author.aid)
+                                 ->  Seq Scan on pub_author  (cost=0.00..145456.37 rows=10083737 width=8)
+                                 ->  Hash  (cost=8.45..8.45 rows=1 width=19)
+                                       ->  Index Scan using author_name_key on author  (cost=0.43..8.45 rows=1 width=19)
+                                             Index Cond: (name = 'Yan Zhang'::text)
+                           ->  Index Scan using publication_pkey on publication  (cost=0.43..7.64 rows=1 width=90)
+                                 Index Cond: (pubid = pub_author.pubid)
+                                 Filter: (year = 2012)
+                     ->  Index Scan using article_pkey on article  (cost=0.43..7.58 rows=1 width=37)
+                           Index Cond: (publication.pubid = pubid)
+               ->  Seq Scan on book  (cost=0.00..208.83 rows=11683 width=33)
+         ->  Seq Scan on incollection  (cost=0.00..674.66 rows=34966 width=92)
+   ->  Index Scan using inproceedings_pkey on inproceedings  (cost=0.43..7.59 rows=1 width=45)
+         Index Cond: (publication.pubid = pubid)
+(22 rows)
+
+DROP VIEW
+CREATE VIEW
+                                               QUERY PLAN                                                
+---------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=1.29..30229.23 rows=1 width=138)
+   ->  Nested Loop  (cost=0.86..30221.63 rows=1 width=56)
+         ->  Index Scan using author_name_key on author  (cost=0.43..8.45 rows=1 width=19)
+               Index Cond: (name = 'Wei Wang'::text)
+         ->  Nested Loop  (cost=0.43..30207.64 rows=554 width=45)
+               ->  Seq Scan on article  (cost=0.00..27731.26 rows=554 width=37)
+                     Filter: (journal = 'CSCWD'::text)
+               ->  Index Only Scan using pub_author_pkey on pub_author  (cost=0.43..4.46 rows=1 width=8)
+                     Index Cond: ((pubid = article.pubid) AND (aid = author.aid))
+   ->  Index Scan using publication_pkey on publication  (cost=0.43..7.59 rows=1 width=90)
+         Index Cond: (pubid = pub_author.pubid)
+         Filter: ((year = 2009) AND (type = 'conf'::text))
+(12 rows)
+
+                                               QUERY PLAN                                                
+---------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=1.29..30696.59 rows=1 width=146)
+   ->  Nested Loop  (cost=0.86..30689.00 rows=1 width=64)
+         ->  Index Scan using author_name_key on author  (cost=0.43..8.45 rows=1 width=19)
+               Index Cond: (name = 'Wei Wang'::text)
+         ->  Nested Loop  (cost=0.43..30678.05 rows=251 width=53)
+               ->  Seq Scan on inproceedings  (cost=0.00..29556.08 rows=251 width=45)
+                     Filter: (booktitle = 'CSCWD'::text)
+               ->  Index Only Scan using pub_author_pkey on pub_author  (cost=0.43..4.46 rows=1 width=8)
+                     Index Cond: ((pubid = inproceedings.pubid) AND (aid = author.aid))
+   ->  Index Scan using publication_pkey on publication  (cost=0.43..7.58 rows=1 width=90)
+         Index Cond: (pubid = pub_author.pubid)
+         Filter: ((year = 2009) AND (type = 'conf'::text))
+(12 rows)
+
+DROP VIEW
+DROP VIEW
+DROP VIEW
+DROP VIEW
+DROP VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+                                                               QUERY PLAN                                                                
+-----------------------------------------------------------------------------------------------------------------------------------------
+ HashAggregate  (cost=98572.32..98572.37 rows=5 width=0)
+   ->  Append  (cost=800.41..98572.30 rows=5 width=0)
+         ->  Aggregate  (cost=800.41..800.42 rows=1 width=0)
+               ->  Index Only Scan using publication_year_index on publication  (cost=0.43..740.85 rows=23821 width=0)
+                     Index Cond: ((year >= 1970) AND (year <= 1979))
+         ->  Aggregate  (cost=3277.70..3277.71 rows=1 width=0)
+               ->  Index Only Scan using publication_year_index on publication publication_1  (cost=0.43..3033.11 rows=97834 width=0)
+                     Index Cond: ((year >= 1980) AND (year <= 1989))
+         ->  Aggregate  (cost=11548.31..11548.32 rows=1 width=0)
+               ->  Index Only Scan using publication_year_index on publication publication_2  (cost=0.43..10685.65 rows=345061 width=0)
+                     Index Cond: ((year >= 1990) AND (year <= 1999))
+         ->  Aggregate  (cost=42552.64..42552.65 rows=1 width=0)
+               ->  Index Only Scan using publication_year_index on publication publication_3  (cost=0.43..39373.95 rows=1271476 width=0)
+                     Index Cond: ((year >= 2000) AND (year <= 2009))
+         ->  Aggregate  (cost=40393.15..40393.16 rows=1 width=0)
+               ->  Index Only Scan using publication_year_index on publication publication_4  (cost=0.43..37375.73 rows=1206965 width=0)
+                     Index Cond: ((year >= 2010) AND (year <= 2019))
+(17 rows)
+
+DROP INDEX
+CREATE INDEX
+ANALYZE
+DROP VIEW
+CREATE VIEW
+                                               QUERY PLAN                                                
+---------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=1.29..30247.15 rows=1 width=139)
+   ->  Nested Loop  (cost=0.86..30239.55 rows=1 width=56)
+         ->  Index Scan using author_name_key on author  (cost=0.43..8.45 rows=1 width=19)
+               Index Cond: (name = 'Wei Wang'::text)
+         ->  Nested Loop  (cost=0.43..30225.52 rows=558 width=45)
+               ->  Seq Scan on article  (cost=0.00..27731.26 rows=558 width=37)
+                     Filter: (journal = 'CSCWD'::text)
+               ->  Index Only Scan using pub_author_pkey on pub_author  (cost=0.43..4.46 rows=1 width=8)
+                     Index Cond: ((pubid = article.pubid) AND (aid = author.aid))
+   ->  Index Scan using publication_pkey on publication  (cost=0.43..7.59 rows=1 width=91)
+         Index Cond: (pubid = pub_author.pubid)
+         Filter: ((year = 2009) AND (type = 'conf'::text))
+(12 rows)
+
+                                               QUERY PLAN                                                
+---------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=1.29..30696.59 rows=1 width=147)
+   ->  Nested Loop  (cost=0.86..30689.00 rows=1 width=64)
+         ->  Index Scan using author_name_key on author  (cost=0.43..8.45 rows=1 width=19)
+               Index Cond: (name = 'Wei Wang'::text)
+         ->  Nested Loop  (cost=0.43..30678.05 rows=251 width=53)
+               ->  Seq Scan on inproceedings  (cost=0.00..29556.08 rows=251 width=45)
+                     Filter: (booktitle = 'CSCWD'::text)
+               ->  Index Only Scan using pub_author_pkey on pub_author  (cost=0.43..4.46 rows=1 width=8)
+                     Index Cond: ((pubid = inproceedings.pubid) AND (aid = author.aid))
+   ->  Index Scan using publication_pkey on publication  (cost=0.43..7.58 rows=1 width=91)
+         Index Cond: (pubid = pub_author.pubid)
+         Filter: ((year = 2009) AND (type = 'conf'::text))
+(12 rows)
+
+DROP VIEW
+DROP VIEW
+CREATE VIEW
+CREATE VIEW
+                                                                  QUERY PLAN                                                                  
+----------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=1182354.05..1182578.83 rows=89914 width=23)
+   Sort Key: pub_rank_9.rank
+   ->  Merge Join  (cost=1114350.33..1173111.31 rows=89914 width=23)
+         Merge Cond: (author.aid = pub_rank_9.aid)
+         ->  Index Scan using author_pkey on author  (cost=0.43..53069.56 rows=1647342 width=19)
+         ->  Materialize  (cost=1114349.90..1114799.47 rows=89914 width=12)
+               ->  Sort  (cost=1114349.90..1114574.69 rows=89914 width=12)
+                     Sort Key: pub_rank_9.aid
+                     ->  Subquery Scan on pub_rank_9  (cost=1097319.37..1105411.66 rows=89914 width=12)
+                           Filter: (pub_rank_9.rank <= 10)
+                           ->  WindowAgg  (cost=1097319.37..1102039.87 rows=269743 width=12)
+                                 ->  Sort  (cost=1097319.37..1097993.73 rows=269743 width=12)
+                                       Sort Key: pub_count_9.pub_num
+                                       ->  Subquery Scan on pub_count_9  (cost=1035614.01..1068373.90 rows=269743 width=12)
+                                             ->  GroupAggregate  (cost=1035614.01..1065676.47 rows=269743 width=4)
+                                                   ->  Sort  (cost=1035614.01..1044735.69 rows=3648670 width=4)
+                                                         Sort Key: pub_author.aid
+                                                         ->  Hash Join  (cost=157968.69..488271.84 rows=3648670 width=4)
+                                                               Hash Cond: (pub_author.pubid = publication.pubid)
+                                                               ->  Seq Scan on pub_author  (cost=0.00..145457.43 rows=10083843 width=8)
+                                                               ->  Hash  (cost=130449.19..130449.19 rows=1677320 width=4)
+                                                                     ->  Seq Scan on publication  (cost=0.00..130449.19 rows=1677320 width=4)
+                                                                           Filter: (type = 'conf'::text)
+(23 rows)
+
+DROP INDEX
+CREATE INDEX
+ANALYZE
+DROP VIEW
+CREATE VIEW
+                                               QUERY PLAN                                                
+---------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=22.06..4381.80 rows=1 width=139)
+   ->  Nested Loop  (cost=21.63..4374.20 rows=1 width=56)
+         ->  Index Scan using author_name_key on author  (cost=0.43..8.45 rows=1 width=19)
+               Index Cond: (name = 'Wei Wang'::text)
+         ->  Nested Loop  (cost=21.20..4360.15 rows=560 width=45)
+               ->  Bitmap Heap Scan on article  (cost=20.77..1856.95 rows=560 width=37)
+                     Recheck Cond: (journal = 'CSCWD'::text)
+                     ->  Bitmap Index Scan on article_journal_index  (cost=0.00..20.63 rows=560 width=0)
+                           Index Cond: (journal = 'CSCWD'::text)
+               ->  Index Only Scan using pub_author_pkey on pub_author  (cost=0.43..4.46 rows=1 width=8)
+                     Index Cond: ((pubid = article.pubid) AND (aid = author.aid))
+   ->  Index Scan using publication_pkey on publication  (cost=0.43..7.59 rows=1 width=91)
+         Index Cond: (pubid = pub_author.pubid)
+         Filter: ((year = 2009) AND (type = 'conf'::text))
+(14 rows)
+
+                                               QUERY PLAN                                                
+---------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=1.29..30701.07 rows=1 width=147)
+   ->  Nested Loop  (cost=0.86..30693.48 rows=1 width=64)
+         ->  Index Scan using author_name_key on author  (cost=0.43..8.45 rows=1 width=19)
+               Index Cond: (name = 'Wei Wang'::text)
+         ->  Nested Loop  (cost=0.43..30682.52 rows=252 width=53)
+               ->  Seq Scan on inproceedings  (cost=0.00..29556.08 rows=252 width=45)
+                     Filter: (booktitle = 'CSCWD'::text)
+               ->  Index Only Scan using pub_author_pkey on pub_author  (cost=0.43..4.46 rows=1 width=8)
+                     Index Cond: ((pubid = inproceedings.pubid) AND (aid = author.aid))
+   ->  Index Scan using publication_pkey on publication  (cost=0.43..7.58 rows=1 width=91)
+         Index Cond: (pubid = pub_author.pubid)
+         Filter: ((year = 2009) AND (type = 'conf'::text))
+(12 rows)
+
+DROP VIEW
+DROP VIEW
+CREATE VIEW
+CREATE VIEW
+DROP VIEW
+CREATE VIEW
+                                                                     QUERY PLAN                                                                     
+----------------------------------------------------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=4406.69..45699.26 rows=200 width=15)
+   ->  Subquery Scan on p10k5  (cost=4406.26..44027.76 rows=200 width=4)
+         ->  HashSetOp Intersect  (cost=4406.26..44025.76 rows=200 width=4)
+               ->  Append  (cost=4406.26..43995.64 rows=12045 width=4)
+                     ->  Subquery Scan on "*SELECT* 1"  (cost=4406.26..4486.47 rows=2468 width=4)
+                           ->  Subquery Scan on pvldb_4  (cost=4406.26..4461.79 rows=2468 width=4)
+                                 ->  HashAggregate  (cost=4406.26..4437.11 rows=2468 width=4)
+                                       Filter: (count(pub_author.aid) >= 10)
+                                       ->  Nested Loop  (cost=21.20..4387.75 rows=2468 width=4)
+                                             ->  Bitmap Heap Scan on article  (cost=20.77..1856.95 rows=560 width=4)
+                                                   Recheck Cond: (journal = 'PVLDB'::text)
+                                                   ->  Bitmap Index Scan on article_journal_index  (cost=0.00..20.63 rows=560 width=0)
+                                                         Index Cond: (journal = 'PVLDB'::text)
+                                             ->  Index Only Scan using pub_author_pkey on pub_author  (cost=0.43..4.48 rows=4 width=8)
+                                                   Index Cond: (pubid = article.pubid)
+                     ->  Subquery Scan on "*SELECT* 2"  (cost=39197.92..39509.17 rows=9577 width=4)
+                           ->  Subquery Scan on kdd_4a  (cost=39197.92..39413.40 rows=9577 width=4)
+                                 ->  HashAggregate  (cost=39197.92..39317.63 rows=9577 width=4)
+                                       Filter: (count(*) >= 5)
+                                       ->  Nested Loop  (cost=0.43..39126.09 rows=9577 width=4)
+                                             ->  Seq Scan on inproceedings  (cost=0.00..29556.08 rows=2173 width=4)
+                                                   Filter: (booktitle = 'KDD'::text)
+                                             ->  Index Only Scan using pub_author_pkey on pub_author pub_author_1  (cost=0.43..4.36 rows=4 width=8)
+                                                   Index Cond: (pubid = inproceedings.pubid)
+   ->  Index Scan using author_pkey on author  (cost=0.43..8.35 rows=1 width=19)
+         Index Cond: (aid = p10k5.aid)
+(26 rows)
+
+DROP VIEW
+CREATE VIEW
+                                                                     QUERY PLAN                                                                     
+----------------------------------------------------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=4406.69..45651.37 rows=200 width=15)
+   ->  Subquery Scan on p10k0  (cost=4406.26..43979.87 rows=200 width=4)
+         ->  HashSetOp Except  (cost=4406.26..43977.87 rows=200 width=4)
+               ->  Append  (cost=4406.26..43947.76 rows=12045 width=4)
+                     ->  Subquery Scan on "*SELECT* 1"  (cost=4406.26..4486.47 rows=2468 width=4)
+                           ->  Subquery Scan on pvldb_4  (cost=4406.26..4461.79 rows=2468 width=4)
+                                 ->  HashAggregate  (cost=4406.26..4437.11 rows=2468 width=4)
+                                       Filter: (count(pub_author.aid) >= 10)
+                                       ->  Nested Loop  (cost=21.20..4387.75 rows=2468 width=4)
+                                             ->  Bitmap Heap Scan on article  (cost=20.77..1856.95 rows=560 width=4)
+                                                   Recheck Cond: (journal = 'PVLDB'::text)
+                                                   ->  Bitmap Index Scan on article_journal_index  (cost=0.00..20.63 rows=560 width=0)
+                                                         Index Cond: (journal = 'PVLDB'::text)
+                                             ->  Index Only Scan using pub_author_pkey on pub_author  (cost=0.43..4.48 rows=4 width=8)
+                                                   Index Cond: (pubid = article.pubid)
+                     ->  Subquery Scan on "*SELECT* 2"  (cost=39173.97..39461.28 rows=9577 width=4)
+                           ->  Subquery Scan on kdd_4a  (cost=39173.97..39365.51 rows=9577 width=4)
+                                 ->  HashAggregate  (cost=39173.97..39269.74 rows=9577 width=4)
+                                       ->  Nested Loop  (cost=0.43..39126.09 rows=9577 width=4)
+                                             ->  Seq Scan on inproceedings  (cost=0.00..29556.08 rows=2173 width=4)
+                                                   Filter: (booktitle = 'KDD'::text)
+                                             ->  Index Only Scan using pub_author_pkey on pub_author pub_author_1  (cost=0.43..4.36 rows=4 width=8)
+                                                   Index Cond: (pubid = inproceedings.pubid)
+   ->  Index Scan using author_pkey on author  (cost=0.43..8.35 rows=1 width=19)
+         Index Cond: (aid = p10k0.aid)
+(25 rows)
+
+DROP INDEX
+CREATE INDEX
+ANALYZE
+DROP VIEW
+CREATE VIEW
+                                               QUERY PLAN                                                
+---------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=1.29..30265.07 rows=1 width=139)
+   ->  Nested Loop  (cost=0.86..30257.47 rows=1 width=56)
+         ->  Index Scan using author_name_key on author  (cost=0.43..8.45 rows=1 width=19)
+               Index Cond: (name = 'Wei Wang'::text)
+         ->  Nested Loop  (cost=0.43..30243.40 rows=562 width=45)
+               ->  Seq Scan on article  (cost=0.00..27731.26 rows=562 width=37)
+                     Filter: (journal = 'CSCWD'::text)
+               ->  Index Only Scan using pub_author_pkey on pub_author  (cost=0.43..4.46 rows=1 width=8)
+                     Index Cond: ((pubid = article.pubid) AND (aid = author.aid))
+   ->  Index Scan using publication_pkey on publication  (cost=0.43..7.59 rows=1 width=91)
+         Index Cond: (pubid = pub_author.pubid)
+         Filter: ((year = 2009) AND (type = 'conf'::text))
+(12 rows)
+
+                                                    QUERY PLAN                                                    
+------------------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=50.14..14591.61 rows=1 width=147)
+   ->  Nested Loop  (cost=49.71..14584.02 rows=1 width=64)
+         ->  Index Scan using author_name_key on author  (cost=0.43..8.45 rows=1 width=19)
+               Index Cond: (name = 'Wei Wang'::text)
+         ->  Nested Loop  (cost=49.28..14554.38 rows=2119 width=53)
+               ->  Bitmap Heap Scan on inproceedings  (cost=48.85..5082.45 rows=2119 width=45)
+                     Recheck Cond: (booktitle = 'CSCWD'::text)
+                     ->  Bitmap Index Scan on inproceedings_booktitle_index  (cost=0.00..48.32 rows=2119 width=0)
+                           Index Cond: (booktitle = 'CSCWD'::text)
+               ->  Index Only Scan using pub_author_pkey on pub_author  (cost=0.43..4.46 rows=1 width=8)
+                     Index Cond: ((pubid = inproceedings.pubid) AND (aid = author.aid))
+   ->  Index Scan using publication_pkey on publication  (cost=0.43..7.58 rows=1 width=91)
+         Index Cond: (pubid = pub_author.pubid)
+         Filter: ((year = 2009) AND (type = 'conf'::text))
+(14 rows)
+
+DROP VIEW
+DROP VIEW
+CREATE VIEW
+CREATE VIEW
+DROP VIEW
+CREATE VIEW
+                                                                        QUERY PLAN                                                                        
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=30307.80..54633.05 rows=200 width=15)
+   ->  Subquery Scan on p10k5  (cost=30307.37..52961.55 rows=200 width=4)
+         ->  HashSetOp Intersect  (cost=30307.37..52959.55 rows=200 width=4)
+               ->  Append  (cost=30307.37..52915.72 rows=17535 width=4)
+                     ->  Subquery Scan on "*SELECT* 1"  (cost=30307.37..30391.15 rows=2578 width=4)
+                           ->  Subquery Scan on pvldb_4  (cost=30307.37..30365.37 rows=2578 width=4)
+                                 ->  HashAggregate  (cost=30307.37..30339.59 rows=2578 width=4)
+                                       Filter: (count(pub_author.aid) >= 10)
+                                       ->  Nested Loop  (cost=0.43..30288.03 rows=2578 width=4)
+                                             ->  Seq Scan on article  (cost=0.00..27731.26 rows=562 width=4)
+                                                   Filter: (journal = 'PVLDB'::text)
+                                             ->  Index Only Scan using pub_author_pkey on pub_author  (cost=0.43..4.50 rows=5 width=8)
+                                                   Index Cond: (pubid = article.pubid)
+                     ->  Subquery Scan on "*SELECT* 2"  (cost=21888.89..22524.56 rows=14957 width=4)
+                           ->  Subquery Scan on kdd_4a  (cost=21888.89..22374.99 rows=14957 width=4)
+                                 ->  GroupAggregate  (cost=21888.89..22225.42 rows=14957 width=4)
+                                       Filter: (count(*) >= 5)
+                                       ->  Sort  (cost=21888.89..21926.28 rows=14957 width=4)
+                                             Sort Key: pub_author_1.aid
+                                             ->  Nested Loop  (cost=74.13..20851.73 rows=14957 width=4)
+                                                   ->  Bitmap Heap Scan on inproceedings  (cost=73.69..6628.63 rows=3260 width=4)
+                                                         Recheck Cond: (booktitle = 'KDD'::text)
+                                                         ->  Bitmap Index Scan on inproceedings_booktitle_index  (cost=0.00..72.88 rows=3260 width=0)
+                                                               Index Cond: (booktitle = 'KDD'::text)
+                                                   ->  Index Only Scan using pub_author_pkey on pub_author pub_author_1  (cost=0.43..4.31 rows=5 width=8)
+                                                         Index Cond: (pubid = inproceedings.pubid)
+   ->  Index Scan using author_pkey on author  (cost=0.43..8.35 rows=1 width=19)
+         Index Cond: (aid = p10k5.aid)
+(28 rows)
+
+DROP VIEW
+CREATE VIEW
+                                                                        QUERY PLAN                                                                        
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=30307.80..54558.27 rows=200 width=15)
+   ->  Subquery Scan on p10k0  (cost=30307.37..52886.77 rows=200 width=4)
+         ->  HashSetOp Except  (cost=30307.37..52884.77 rows=200 width=4)
+               ->  Append  (cost=30307.37..52840.93 rows=17535 width=4)
+                     ->  Subquery Scan on "*SELECT* 1"  (cost=30307.37..30391.15 rows=2578 width=4)
+                           ->  Subquery Scan on pvldb_4  (cost=30307.37..30365.37 rows=2578 width=4)
+                                 ->  HashAggregate  (cost=30307.37..30339.59 rows=2578 width=4)
+                                       Filter: (count(pub_author.aid) >= 10)
+                                       ->  Nested Loop  (cost=0.43..30288.03 rows=2578 width=4)
+                                             ->  Seq Scan on article  (cost=0.00..27731.26 rows=562 width=4)
+                                                   Filter: (journal = 'PVLDB'::text)
+                                             ->  Index Only Scan using pub_author_pkey on pub_author  (cost=0.43..4.50 rows=5 width=8)
+                                                   Index Cond: (pubid = article.pubid)
+                     ->  Subquery Scan on "*SELECT* 2"  (cost=21888.89..22449.78 rows=14957 width=4)
+                           ->  Subquery Scan on kdd_4a  (cost=21888.89..22300.21 rows=14957 width=4)
+                                 ->  GroupAggregate  (cost=21888.89..22150.64 rows=14957 width=4)
+                                       ->  Sort  (cost=21888.89..21926.28 rows=14957 width=4)
+                                             Sort Key: pub_author_1.aid
+                                             ->  Nested Loop  (cost=74.13..20851.73 rows=14957 width=4)
+                                                   ->  Bitmap Heap Scan on inproceedings  (cost=73.69..6628.63 rows=3260 width=4)
+                                                         Recheck Cond: (booktitle = 'KDD'::text)
+                                                         ->  Bitmap Index Scan on inproceedings_booktitle_index  (cost=0.00..72.88 rows=3260 width=0)
+                                                               Index Cond: (booktitle = 'KDD'::text)
+                                                   ->  Index Only Scan using pub_author_pkey on pub_author pub_author_1  (cost=0.43..4.31 rows=5 width=8)
+                                                         Index Cond: (pubid = inproceedings.pubid)
+   ->  Index Scan using author_pkey on author  (cost=0.43..8.35 rows=1 width=19)
+         Index Cond: (aid = p10k0.aid)
+(27 rows)
+
+DROP INDEX
+CREATE INDEX
+CREATE INDEX
+ANALYZE
+DROP VIEW
+DROP VIEW
+CREATE VIEW
+CREATE VIEW
+                                                                             QUERY PLAN                                                                              
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=2373045.55..2373266.77 rows=88488 width=23)
+   Sort Key: pub_rank_2b.rank
+   ->  Merge Join  (cost=2305222.32..2363958.34 rows=88488 width=23)
+         Merge Cond: (author.aid = pub_rank_2b.aid)
+         ->  Index Scan using author_pkey on author  (cost=0.43..53069.56 rows=1647342 width=19)
+         ->  Materialize  (cost=2305221.89..2305664.33 rows=88488 width=12)
+               ->  Sort  (cost=2305221.89..2305443.11 rows=88488 width=12)
+                     Sort Key: pub_rank_2b.aid
+                     ->  Subquery Scan on pub_rank_2b  (cost=2288471.80..2296435.69 rows=88488 width=12)
+                           Filter: (pub_rank_2b.rank <= 10)
+                           ->  WindowAgg  (cost=2288471.80..2293117.40 rows=265463 width=12)
+                                 ->  Sort  (cost=2288471.80..2289135.46 rows=265463 width=12)
+                                       Sort Key: pub_count_2b.total_page
+                                       ->  Subquery Scan on pub_count_2b  (cost=2179079.16..2260016.54 rows=265463 width=12)
+                                             ->  GroupAggregate  (cost=2179079.16..2257361.91 rows=265463 width=8)
+                                                   ->  Sort  (cost=2179079.16..2204288.53 rows=10083749 width=8)
+                                                         Sort Key: pub_author.aid
+                                                         ->  Merge Join  (cost=16.92..592465.40 rows=10083749 width=8)
+                                                               Merge Cond: (publication.pubid = pub_author.pubid)
+                                                               ->  Index Scan using publication_pkey on publication  (cost=0.43..192969.71 rows=4638997 width=8)
+                                                               ->  Index Only Scan using pub_author_pkey on pub_author  (cost=0.43..261860.67 rows=10083749 width=8)
+(21 rows)
+
+DROP VIEW
+DROP VIEW
+DROP VIEW
+DROP VIEW
+DROP VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+DROP VIEW
+DROP VIEW
+DROP VIEW
+DROP VIEW
+DROP VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+                                                                      QUERY PLAN                                                                      
+------------------------------------------------------------------------------------------------------------------------------------------------------
+ Append  (cost=547518.59..6702202.09 rows=1065755 width=47)
+   ->  Merge Join  (cost=547518.59..607637.51 rows=65143 width=15)
+         Merge Cond: (pub_author.aid = author.aid)
+         InitPlan 1 (returns $1)
+           ->  Aggregate  (cost=274736.22..274736.23 rows=1 width=8)
+                 ->  GroupAggregate  (cost=272781.93..273921.94 rows=65143 width=8)
+                       ->  Sort  (cost=272781.93..272944.79 rows=65143 width=8)
+                             Sort Key: pub_author_5.aid
+                             ->  Nested Loop  (cost=0.43..266680.82 rows=65143 width=8)
+                                   ->  Seq Scan on publication publication_5  (cost=0.00..142088.96 rows=29969 width=4)
+                                         Filter: ((year >= 1970) AND (year <= 1979))
+                                   ->  Index Only Scan using pub_author_pkey on pub_author pub_author_5  (cost=0.43..4.11 rows=5 width=8)
+                                         Index Cond: (pubid = publication_5.pubid)
+         ->  GroupAggregate  (cost=272781.93..274247.65 rows=65143 width=8)
+               Filter: (count(publication.pubid) = $1)
+               ->  Sort  (cost=272781.93..272944.79 rows=65143 width=8)
+                     Sort Key: pub_author.aid
+                     ->  Nested Loop  (cost=0.43..266680.82 rows=65143 width=8)
+                           ->  Seq Scan on publication  (cost=0.00..142088.96 rows=29969 width=4)
+                                 Filter: ((year >= 1970) AND (year <= 1979))
+                           ->  Index Only Scan using pub_author_pkey on pub_author  (cost=0.43..4.11 rows=5 width=8)
+                                 Index Cond: (pubid = publication.pubid)
+         ->  Index Scan using author_pkey on author  (cost=0.43..53069.56 rows=1647342 width=19)
+   ->  Merge Join  (cost=930722.93..997100.45 rows=204223 width=15)
+         Merge Cond: (pub_author_1.aid = author_1.aid)
+         InitPlan 2 (returns $3)
+           ->  Aggregate  (cost=468424.59..468424.60 rows=1 width=8)
+                 ->  GroupAggregate  (cost=462297.90..465871.80 rows=204223 width=8)
+                       ->  Sort  (cost=462297.90..462808.46 rows=204223 width=8)
+                             Sort Key: pub_author_6.aid
+                             ->  Merge Join  (cost=151134.21..441492.65 rows=204223 width=8)
+                                   Merge Cond: (pub_author_6.pubid = publication_6.pubid)
+                                   ->  Index Only Scan using pub_author_pkey on pub_author pub_author_6  (cost=0.43..261860.67 rows=10083749 width=8)
+                                   ->  Materialize  (cost=151133.72..151603.48 rows=93952 width=4)
+                                         ->  Sort  (cost=151133.72..151368.60 rows=93952 width=4)
+                                               Sort Key: publication_6.pubid
+                                               ->  Seq Scan on publication publication_6  (cost=0.00..142088.96 rows=93952 width=4)
+                                                     Filter: ((year >= 1980) AND (year <= 1989))
+         ->  GroupAggregate  (cost=462297.90..466892.92 rows=204223 width=8)
+               Filter: (count(publication_1.pubid) = $3)
+               ->  Sort  (cost=462297.90..462808.46 rows=204223 width=8)
+                     Sort Key: pub_author_1.aid
+                     ->  Merge Join  (cost=151134.21..441492.65 rows=204223 width=8)
+                           Merge Cond: (pub_author_1.pubid = publication_1.pubid)
+                           ->  Index Only Scan using pub_author_pkey on pub_author pub_author_1  (cost=0.43..261860.67 rows=10083749 width=8)
+                           ->  Materialize  (cost=151133.72..151603.48 rows=93952 width=4)
+                                 ->  Sort  (cost=151133.72..151368.60 rows=93952 width=4)
+                                       Sort Key: publication_1.pubid
+                                       ->  Seq Scan on publication publication_1  (cost=0.00..142088.96 rows=93952 width=4)
+                                             Filter: ((year >= 1980) AND (year <= 1989))
+         ->  Index Scan using author_pkey on author author_1  (cost=0.43..53069.56 rows=1647342 width=19)
+   ->  Merge Join  (cost=1133272.48..1207126.64 rows=265463 width=15)
+         Merge Cond: (pub_author_2.aid = author_2.aid)
+         InitPlan 3 (returns $4)
+           ->  Aggregate  (cost=572388.28..572388.29 rows=1 width=8)
+                 ->  GroupAggregate  (cost=560883.76..569069.99 rows=265463 width=8)
+                       ->  Sort  (cost=560883.76..562727.63 rows=737547 width=8)
+                             Sort Key: pub_author_7.aid
+                             ->  Hash Join  (cost=147656.28..468827.04 rows=737547 width=8)
+                                   Hash Cond: (pub_author_7.pubid = publication_7.pubid)
+                                   ->  Seq Scan on pub_author pub_author_7  (cost=0.00..145456.49 rows=10083749 width=8)
+                                   ->  Hash  (cost=142088.96..142088.96 rows=339306 width=4)
+                                         ->  Seq Scan on publication publication_7  (cost=0.00..142088.96 rows=339306 width=4)
+                                               Filter: ((year >= 1990) AND (year <= 1999))
+         ->  GroupAggregate  (cost=560883.76..571577.52 rows=265463 width=8)
+               Filter: (count(publication_2.pubid) = $4)
+               ->  Sort  (cost=560883.76..562727.63 rows=737547 width=8)
+                     Sort Key: pub_author_2.aid
+                     ->  Hash Join  (cost=147656.28..468827.04 rows=737547 width=8)
+                           Hash Cond: (pub_author_2.pubid = publication_2.pubid)
+                           ->  Seq Scan on pub_author pub_author_2  (cost=0.00..145456.49 rows=10083749 width=8)
+                           ->  Hash  (cost=142088.96..142088.96 rows=339306 width=4)
+                                 ->  Seq Scan on publication publication_2  (cost=0.00..142088.96 rows=339306 width=4)
+                                       Filter: ((year >= 1990) AND (year <= 1999))
+         ->  Index Scan using author_pkey on author author_2  (cost=0.43..53069.56 rows=1647342 width=19)
+   ->  Merge Join  (cost=1851590.73..1945446.72 rows=265463 width=15)
+         Merge Cond: (pub_author_3.aid = author_3.aid)
+         InitPlan 4 (returns $5)
+           ->  Aggregate  (cost=939048.09..939048.10 rows=1 width=8)
+                 ->  GroupAggregate  (cost=912542.20..935729.81 rows=265463 width=8)
+                       ->  Sort  (cost=912542.20..919386.53 rows=2737730 width=8)
+                             Sort Key: pub_author_8.aid
+                             ->  Hash Join  (cost=162752.51..507519.10 rows=2737730 width=8)
+                                   Hash Cond: (pub_author_8.pubid = publication_8.pubid)
+                                   ->  Seq Scan on pub_author pub_author_8  (cost=0.00..145456.49 rows=10083749 width=8)
+                                   ->  Hash  (cost=142088.96..142088.96 rows=1259484 width=4)
+                                         ->  Seq Scan on publication publication_8  (cost=0.00..142088.96 rows=1259484 width=4)
+                                               Filter: ((year >= 2000) AND (year <= 2009))
+         ->  GroupAggregate  (cost=912542.20..943237.79 rows=265463 width=8)
+               Filter: (count(publication_3.pubid) = $5)
+               ->  Sort  (cost=912542.20..919386.53 rows=2737730 width=8)
+                     Sort Key: pub_author_3.aid
+                     ->  Hash Join  (cost=162752.51..507519.10 rows=2737730 width=8)
+                           Hash Cond: (pub_author_3.pubid = publication_3.pubid)
+                           ->  Seq Scan on pub_author pub_author_3  (cost=0.00..145456.49 rows=10083749 width=8)
+                           ->  Hash  (cost=142088.96..142088.96 rows=1259484 width=4)
+                                 ->  Seq Scan on publication publication_3  (cost=0.00..142088.96 rows=1259484 width=4)
+                                       Filter: ((year >= 2000) AND (year <= 2009))
+         ->  Index Scan using author_pkey on author author_3  (cost=0.43..53069.56 rows=1647342 width=19)
+   ->  Merge Join  (cost=1840682.92..1934233.22 rows=265463 width=15)
+         Merge Cond: (pub_author_4.aid = author_4.aid)
+         InitPlan 5 (returns $6)
+           ->  Aggregate  (cost=933479.55..933479.56 rows=1 width=8)
+                 ->  GroupAggregate  (cost=907202.93..930161.27 rows=265463 width=8)
+                       ->  Sort  (cost=907202.93..913970.83 rows=2707161 width=8)
+                             Sort Key: pub_author_9.aid
+                             ->  Hash Join  (cost=162521.72..506927.62 rows=2707161 width=8)
+                                   Hash Cond: (pub_author_9.pubid = publication_9.pubid)
+                                   ->  Seq Scan on pub_author pub_author_9  (cost=0.00..145456.49 rows=10083749 width=8)
+                                   ->  Hash  (cost=142088.96..142088.96 rows=1245421 width=4)
+                                         ->  Seq Scan on publication publication_9  (cost=0.00..142088.96 rows=1245421 width=4)
+                                               Filter: ((year >= 2010) AND (year <= 2019))
+         ->  GroupAggregate  (cost=907202.93..937592.83 rows=265463 width=8)
+               Filter: (count(publication_4.pubid) = $6)
+               ->  Sort  (cost=907202.93..913970.83 rows=2707161 width=8)
+                     Sort Key: pub_author_4.aid
+                     ->  Hash Join  (cost=162521.72..506927.62 rows=2707161 width=8)
+                           Hash Cond: (pub_author_4.pubid = publication_4.pubid)
+                           ->  Seq Scan on pub_author pub_author_4  (cost=0.00..145456.49 rows=10083749 width=8)
+                           ->  Hash  (cost=142088.96..142088.96 rows=1245421 width=4)
+                                 ->  Seq Scan on publication publication_4  (cost=0.00..142088.96 rows=1245421 width=4)
+                                       Filter: ((year >= 2010) AND (year <= 2019))
+         ->  Index Scan using author_pkey on author author_4  (cost=0.43..53069.56 rows=1647342 width=19)
+(123 rows)
+
+DROP VIEW
+DROP VIEW
+CREATE VIEW
+CREATE VIEW
+                                                                    QUERY PLAN                                                                     
+---------------------------------------------------------------------------------------------------------------------------------------------------
+ Hash Join  (cost=42056140.88..42076495.43 rows=265463 width=15)
+   Hash Cond: (collaborator_count.aid = author.aid)
+   InitPlan 1 (returns $0)
+     ->  Aggregate  (cost=20888662.49..20888662.50 rows=1 width=8)
+           ->  Sort  (cost=20884680.54..20885344.20 rows=265463 width=8)
+                 Sort Key: (count(DISTINCT b_1.aid))
+                 ->  GroupAggregate  (cost=20179072.66..20857135.28 rows=265463 width=8)
+                       ->  Sort  (cost=20179072.66..20404208.66 rows=90054398 width=8)
+                             Sort Key: a_1.aid
+                             ->  Merge Join  (cost=0.87..2124890.99 rows=90054398 width=8)
+                                   Merge Cond: (a_1.pubid = b_1.pubid)
+                                   Join Filter: (a_1.aid <> b_1.aid)
+                                   ->  Index Only Scan using pub_author_pkey on pub_author a_1  (cost=0.43..261860.67 rows=10083749 width=8)
+                                   ->  Materialize  (cost=0.43..287070.04 rows=10083749 width=8)
+                                         ->  Index Only Scan using pub_author_pkey on pub_author b_1  (cost=0.43..261860.67 rows=10083749 width=8)
+   ->  Subquery Scan on collaborator_count  (cost=21110480.19..21113798.48 rows=265463 width=4)
+         ->  Sort  (cost=21110480.19..21111143.85 rows=265463 width=8)
+               Sort Key: (count(DISTINCT b.aid))
+               ->  GroupAggregate  (cost=20179072.66..21082934.93 rows=265463 width=8)
+                     Filter: (count(DISTINCT b.aid) = $0)
+                     ->  Sort  (cost=20179072.66..20404208.66 rows=90054398 width=8)
+                           Sort Key: a.aid
+                           ->  Merge Join  (cost=0.87..2124890.99 rows=90054398 width=8)
+                                 Merge Cond: (a.pubid = b.pubid)
+                                 Join Filter: (a.aid <> b.aid)
+                                 ->  Index Only Scan using pub_author_pkey on pub_author a  (cost=0.43..261860.67 rows=10083749 width=8)
+                                 ->  Materialize  (cost=0.43..287070.04 rows=10083749 width=8)
+                                       ->  Index Only Scan using pub_author_pkey on pub_author b  (cost=0.43..261860.67 rows=10083749 width=8)
+   ->  Hash  (cost=26753.42..26753.42 rows=1647342 width=19)
+         ->  Seq Scan on author  (cost=0.00..26753.42 rows=1647342 width=19)
+(30 rows)
+
+DROP VIEW
+CREATE VIEW
+                                                           QUERY PLAN                                                            
+---------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=2381203.53..2381867.19 rows=265463 width=23)
+   Sort Key: (sum(publication.total_page))
+   ->  Merge Join  (cost=2179079.59..2346395.77 rows=265463 width=23)
+         Merge Cond: (pub_author.aid = author.aid)
+         ->  GroupAggregate  (cost=2179079.16..2283234.94 rows=265463 width=8)
+               Filter: (sum(publication.total_page) >= 4000)
+               ->  Sort  (cost=2179079.16..2204288.53 rows=10083749 width=8)
+                     Sort Key: pub_author.aid
+                     ->  Merge Join  (cost=16.92..592465.40 rows=10083749 width=8)
+                           Merge Cond: (publication.pubid = pub_author.pubid)
+                           ->  Index Scan using publication_pkey on publication  (cost=0.43..192969.71 rows=4638997 width=8)
+                           ->  Index Only Scan using pub_author_pkey on pub_author  (cost=0.43..261860.67 rows=10083749 width=8)
+         ->  Index Scan using author_pkey on author  (cost=0.43..53069.56 rows=1647342 width=19)
+(13 rows)
+
+CREATE INDEX
+ANALYZE
+DROP VIEW
+CREATE VIEW
+                                                          QUERY PLAN                                                          
+------------------------------------------------------------------------------------------------------------------------------
+ Nested Loop Left Join  (cost=2.72..223.62 rows=1 width=312)
+   ->  Nested Loop Left Join  (cost=2.30..216.03 rows=1 width=267)
+         ->  Nested Loop Left Join  (cost=2.01..208.60 rows=1 width=175)
+               ->  Nested Loop Left Join  (cost=1.72..201.24 rows=1 width=142)
+                     ->  Nested Loop  (cost=1.29..193.64 rows=1 width=105)
+                           ->  Nested Loop  (cost=0.86..147.73 rows=6 width=19)
+                                 ->  Index Scan using author_name_key on author  (cost=0.43..8.45 rows=1 width=19)
+                                       Index Cond: (name = 'Yan Zhang'::text)
+                                 ->  Index Scan using pub_author_aid_index on pub_author  (cost=0.43..138.92 rows=37 width=8)
+                                       Index Cond: (aid = author.aid)
+                           ->  Index Scan using publication_pkey on publication  (cost=0.43..7.64 rows=1 width=90)
+                                 Index Cond: (pubid = pub_author.pubid)
+                                 Filter: (year = 2012)
+                     ->  Index Scan using article_pkey on article  (cost=0.43..7.58 rows=1 width=37)
+                           Index Cond: (publication.pubid = pubid)
+               ->  Index Scan using book_pkey on book  (cost=0.29..7.35 rows=1 width=33)
+                     Index Cond: (publication.pubid = pubid)
+         ->  Index Scan using incollection_pkey on incollection  (cost=0.29..7.42 rows=1 width=92)
+               Index Cond: (publication.pubid = pubid)
+   ->  Index Scan using inproceedings_pkey on inproceedings  (cost=0.43..7.59 rows=1 width=45)
+         Index Cond: (publication.pubid = pubid)
+(21 rows)
+
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+ANALYZE
+DROP VIEW
+CREATE VIEW
+                                                 QUERY PLAN                                                 
+------------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=1.72..202.93 rows=1 width=138)
+   ->  Nested Loop  (cost=1.29..195.33 rows=1 width=56)
+         ->  Nested Loop  (cost=0.86..150.10 rows=6 width=19)
+               ->  Index Scan using author_name_key on author  (cost=0.43..8.45 rows=1 width=19)
+                     Index Cond: (name = 'Wei Wang'::text)
+               ->  Index Scan using pub_author_aid_index on pub_author  (cost=0.43..141.27 rows=38 width=8)
+                     Index Cond: (aid = author.aid)
+         ->  Index Scan using article_pkey on article  (cost=0.43..7.53 rows=1 width=37)
+               Index Cond: (pubid = pub_author.pubid)
+               Filter: (journal = 'CSCWD'::text)
+   ->  Index Scan using publication_pkey on publication  (cost=0.43..7.59 rows=1 width=90)
+         Index Cond: (pubid = pub_author.pubid)
+         Filter: ((year = 2009) AND (type = 'conf'::text))
+(13 rows)
+
+                                                 QUERY PLAN                                                 
+------------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=1.72..202.87 rows=1 width=146)
+   ->  Nested Loop  (cost=1.29..195.28 rows=1 width=64)
+         ->  Nested Loop  (cost=0.86..150.10 rows=6 width=19)
+               ->  Index Scan using author_name_key on author  (cost=0.43..8.45 rows=1 width=19)
+                     Index Cond: (name = 'Wei Wang'::text)
+               ->  Index Scan using pub_author_aid_index on pub_author  (cost=0.43..141.27 rows=38 width=8)
+                     Index Cond: (aid = author.aid)
+         ->  Index Scan using inproceedings_pkey on inproceedings  (cost=0.43..7.52 rows=1 width=45)
+               Index Cond: (pubid = pub_author.pubid)
+               Filter: (booktitle = 'CSCWD'::text)
+   ->  Index Scan using publication_pkey on publication  (cost=0.43..7.58 rows=1 width=90)
+         Index Cond: (pubid = pub_author.pubid)
+         Filter: ((year = 2009) AND (type = 'conf'::text))
+(13 rows)
+
+DROP INDEX
+DROP INDEX
+ANALYZE
+DROP VIEW
+DROP VIEW
+CREATE VIEW
+CREATE VIEW
+DROP VIEW
+CREATE VIEW
+                                                                        QUERY PLAN                                                                        
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=4416.26..26123.07 rows=200 width=15)
+   ->  Subquery Scan on p10k5  (cost=4415.83..24451.57 rows=200 width=4)
+         ->  HashSetOp Intersect  (cost=4415.83..24449.57 rows=200 width=4)
+               ->  Append  (cost=4415.83..24411.43 rows=15257 width=4)
+                     ->  Subquery Scan on "*SELECT* 1"  (cost=4415.83..4497.73 rows=2520 width=4)
+                           ->  Subquery Scan on pvldb_4  (cost=4415.83..4472.53 rows=2520 width=4)
+                                 ->  HashAggregate  (cost=4415.83..4447.33 rows=2520 width=4)
+                                       Filter: (count(pub_author.aid) >= 10)
+                                       ->  Nested Loop  (cost=21.19..4396.93 rows=2520 width=4)
+                                             ->  Bitmap Heap Scan on article  (cost=20.76..1853.92 rows=559 width=4)
+                                                   Recheck Cond: (journal = 'PVLDB'::text)
+                                                   ->  Bitmap Index Scan on article_journal_index  (cost=0.00..20.62 rows=559 width=0)
+                                                         Index Cond: (journal = 'PVLDB'::text)
+                                             ->  Index Only Scan using pub_author_pkey on pub_author  (cost=0.43..4.50 rows=5 width=8)
+                                                   Index Cond: (pubid = article.pubid)
+                     ->  Subquery Scan on "*SELECT* 2"  (cost=19372.38..19913.70 rows=12737 width=4)
+                           ->  Subquery Scan on kdd_4a  (cost=19372.38..19786.33 rows=12737 width=4)
+                                 ->  GroupAggregate  (cost=19372.38..19658.96 rows=12737 width=4)
+                                       Filter: (count(*) >= 5)
+                                       ->  Sort  (cost=19372.38..19404.22 rows=12737 width=4)
+                                             Sort Key: pub_author_1.aid
+                                             ->  Nested Loop  (cost=62.76..18503.92 rows=12737 width=4)
+                                                   ->  Bitmap Heap Scan on inproceedings  (cost=62.32..6099.30 rows=2825 width=4)
+                                                         Recheck Cond: (booktitle = 'KDD'::text)
+                                                         ->  Bitmap Index Scan on inproceedings_booktitle_index  (cost=0.00..61.62 rows=2825 width=0)
+                                                               Index Cond: (booktitle = 'KDD'::text)
+                                                   ->  Index Only Scan using pub_author_pkey on pub_author pub_author_1  (cost=0.43..4.34 rows=5 width=8)
+                                                         Index Cond: (pubid = inproceedings.pubid)
+   ->  Index Scan using author_pkey on author  (cost=0.43..8.35 rows=1 width=19)
+         Index Cond: (aid = p10k5.aid)
+(30 rows)
+
+DROP VIEW
+CREATE VIEW
+                                                                     QUERY PLAN                                                                     
+----------------------------------------------------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=4416.26..25159.09 rows=200 width=15)
+   ->  Subquery Scan on p10k0  (cost=4415.83..23487.59 rows=200 width=4)
+         ->  HashSetOp Except  (cost=4415.83..23485.59 rows=200 width=4)
+               ->  Append  (cost=4415.83..23447.45 rows=15257 width=4)
+                     ->  Subquery Scan on "*SELECT* 1"  (cost=4415.83..4497.73 rows=2520 width=4)
+                           ->  Subquery Scan on pvldb_4  (cost=4415.83..4472.53 rows=2520 width=4)
+                                 ->  HashAggregate  (cost=4415.83..4447.33 rows=2520 width=4)
+                                       Filter: (count(pub_author.aid) >= 10)
+                                       ->  Nested Loop  (cost=21.19..4396.93 rows=2520 width=4)
+                                             ->  Bitmap Heap Scan on article  (cost=20.76..1853.92 rows=559 width=4)
+                                                   Recheck Cond: (journal = 'PVLDB'::text)
+                                                   ->  Bitmap Index Scan on article_journal_index  (cost=0.00..20.62 rows=559 width=0)
+                                                         Index Cond: (journal = 'PVLDB'::text)
+                                             ->  Index Only Scan using pub_author_pkey on pub_author  (cost=0.43..4.50 rows=5 width=8)
+                                                   Index Cond: (pubid = article.pubid)
+                     ->  Subquery Scan on "*SELECT* 2"  (cost=18567.61..18949.72 rows=12737 width=4)
+                           ->  Subquery Scan on kdd_4a  (cost=18567.61..18822.35 rows=12737 width=4)
+                                 ->  HashAggregate  (cost=18567.61..18694.98 rows=12737 width=4)
+                                       ->  Nested Loop  (cost=62.76..18503.92 rows=12737 width=4)
+                                             ->  Bitmap Heap Scan on inproceedings  (cost=62.32..6099.30 rows=2825 width=4)
+                                                   Recheck Cond: (booktitle = 'KDD'::text)
+                                                   ->  Bitmap Index Scan on inproceedings_booktitle_index  (cost=0.00..61.62 rows=2825 width=0)
+                                                         Index Cond: (booktitle = 'KDD'::text)
+                                             ->  Index Only Scan using pub_author_pkey on pub_author pub_author_1  (cost=0.43..4.34 rows=5 width=8)
+                                                   Index Cond: (pubid = inproceedings.pubid)
+   ->  Index Scan using author_pkey on author  (cost=0.43..8.35 rows=1 width=19)
+         Index Cond: (aid = p10k0.aid)
+(27 rows)
+
+DROP INDEX
+DROP INDEX
+CREATE INDEX
+ANALYZE
+DROP VIEW
+DROP VIEW
+CREATE VIEW
+CREATE VIEW
+                                                                              QUERY PLAN                                                                               
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=1199041.18..1199274.33 rows=93260 width=23)
+   Sort Key: pub_rank_9.rank
+   ->  Merge Join  (cost=1130609.01..1189428.54 rows=93260 width=23)
+         Merge Cond: (author.aid = pub_rank_9.aid)
+         ->  Index Scan using author_pkey on author  (cost=0.43..53069.56 rows=1647342 width=19)
+         ->  Materialize  (cost=1130608.58..1131074.88 rows=93260 width=12)
+               ->  Sort  (cost=1130608.58..1130841.73 rows=93260 width=12)
+                     Sort Key: pub_rank_9.aid
+                     ->  Subquery Scan on pub_rank_9  (cost=1112921.05..1121314.45 rows=93260 width=12)
+                           Filter: (pub_rank_9.rank <= 10)
+                           ->  WindowAgg  (cost=1112921.05..1117817.20 rows=279780 width=12)
+                                 ->  Sort  (cost=1112921.05..1113620.50 rows=279780 width=12)
+                                       Sort Key: pub_count_9.pub_num
+                                       ->  Subquery Scan on pub_count_9  (cost=1050719.16..1082824.94 rows=279780 width=12)
+                                             ->  GroupAggregate  (cost=1050719.16..1080027.14 rows=279780 width=4)
+                                                   ->  Sort  (cost=1050719.16..1059555.89 rows=3534691 width=4)
+                                                         Sort Key: pub_author.aid
+                                                         ->  Hash Join  (cost=154509.93..521281.80 rows=3534691 width=4)
+                                                               Hash Cond: (pub_author.pubid = publication.pubid)
+                                                               ->  Seq Scan on pub_author  (cost=0.00..145456.48 rows=10083748 width=8)
+                                                               ->  Hash  (cost=127837.36..127837.36 rows=1625725 width=4)
+                                                                     ->  Bitmap Heap Scan on publication  (cost=35011.80..127837.36 rows=1625725 width=4)
+                                                                           Recheck Cond: (type = 'conf'::text)
+                                                                           ->  Bitmap Index Scan on publication_type_index  (cost=0.00..34605.37 rows=1625725 width=0)
+                                                                                 Index Cond: (type = 'conf'::text)
+(25 rows)
+
+DROP INDEX
+DROP INDEX
+DROP INDEX
+CREATE INDEX
+ANALYZE
+DROP VIEW
+DROP VIEW
+DROP VIEW
+DROP VIEW
+DROP VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+                                                               QUERY PLAN                                                                
+-----------------------------------------------------------------------------------------------------------------------------------------
+ HashAggregate  (cost=100112.57..100112.62 rows=5 width=0)
+   ->  Append  (cost=997.16..100112.55 rows=5 width=0)
+         ->  Aggregate  (cost=997.16..997.17 rows=1 width=0)
+               ->  Index Only Scan using publication_year_index on publication  (cost=0.43..922.85 rows=29721 width=0)
+                     Index Cond: ((year >= 1970) AND (year <= 1979))
+         ->  Aggregate  (cost=3154.04..3154.05 rows=1 width=0)
+               ->  Index Only Scan using publication_year_index on publication publication_1  (cost=0.43..2918.75 rows=94116 width=0)
+                     Index Cond: ((year >= 1980) AND (year <= 1989))
+         ->  Aggregate  (cost=11843.52..11843.53 rows=1 width=0)
+               ->  Index Only Scan using publication_year_index on publication publication_2  (cost=0.43..10959.17 rows=353737 width=0)
+                     Index Cond: ((year >= 1990) AND (year <= 1999))
+         ->  Aggregate  (cost=42974.15..42974.16 rows=1 width=0)
+               ->  Index Only Scan using publication_year_index on publication publication_3  (cost=0.43..39765.07 rows=1283632 width=0)
+                     Index Cond: ((year >= 2000) AND (year <= 2009))
+         ->  Aggregate  (cost=41143.58..41143.59 rows=1 width=0)
+               ->  Index Only Scan using publication_year_index on publication publication_4  (cost=0.43..38071.23 rows=1228940 width=0)
+                     Index Cond: ((year >= 2010) AND (year <= 2019))
+(17 rows)
+
+DROP INDEX

@@ -1,10 +1,22 @@
--- single index
+Executing: -- single index
 
 /*********************** pub_author.aid ************************/
 CREATE INDEX pub_author_aid_index ON pub_author (aid);
 ANALYZE;
 
-----------
+
+Time: 34.5286538601
+
+
+
+
+
+
+
+
+
+
+Executing: 
 -- Query 2A
 -- pub_author.aid: GROUP BY
 DROP VIEW IF EXISTS pub_count_2A CASCADE;
@@ -27,7 +39,19 @@ WHERE rank <= 10
 ORDER BY rank;
 
 
-----------
+
+Time: 4.89515709877
+
+
+
+
+
+
+
+
+
+
+Executing: 
 -- Query 2B
 -- pub_author.aid: GROUP BY
 DROP VIEW IF EXISTS pub_count_2B CASCADE;
@@ -50,7 +74,19 @@ JOIN author USING (aid)
 WHERE rank <= 10
 ORDER BY rank;
 
-----------
+
+Time: 30.3416059017
+
+
+
+
+
+
+
+
+
+
+Executing: 
 -- Query 3 : Author: Yan Zhang
 -- Query 3A
 -- pub_author.aid: JOIN
@@ -71,7 +107,19 @@ LEFT JOIN incollection ON pub_info_3A.pubid = incollection.pubid
 LEFT JOIN inproceedings ON pub_info_3A.pubid = inproceedings.pubid;
 
 
-----------
+
+Time: 0.272124052048
+
+
+
+
+
+
+
+
+
+
+Executing: 
 -- Query 3B
 -- pub_author.aid: JOIN
 
@@ -93,7 +141,19 @@ JOIN inproceedings USING (pubid)
 WHERE inproceedings.booktitle = 'CSCWD';
 
 
-----------
+
+Time: 0.556781053543
+
+
+
+
+
+
+
+
+
+
+Executing: 
 --Query 4A:
 -- pub_author.aid: GROUP BY
 
@@ -126,7 +186,19 @@ CREATE VIEW P10K5 AS(
 SELECT name
 FROM author JOIN P10K5 ON (author.aid = P10K5.aid);
 
-----------
+
+Time: 0.750477075577
+
+
+
+
+
+
+
+
+
+
+Executing: 
 --Query 4B:
 DROP VIEW IF EXISTS P10K0 CASCADE;
 CREATE VIEW P10K0 AS(
@@ -137,7 +209,19 @@ CREATE VIEW P10K0 AS(
 SELECT name
 FROM author JOIN P10K0 ON (author.aid = P10K0.aid);
 
-----------
+
+Time: 0.649099111557
+
+
+
+
+
+
+
+
+
+
+Executing: 
 --Query 5 create view only
 DROP VIEW IF EXISTS decade_1970 CASCADE;
 DROP VIEW IF EXISTS decade_1980 CASCADE;
@@ -170,7 +254,19 @@ CREATE VIEW decade_2010 AS(
   WHERE year >= 2010 and year <= 2019
 );
 
-----------
+
+Time: 0.0191180706024
+
+
+
+
+
+
+
+
+
+
+Executing: 
 -- Query 6:
 -- pub_author.aid: GROUP BY
 DROP VIEW IF EXISTS decade_1970_top_author CASCADE;
@@ -233,7 +329,19 @@ CREATE VIEW decade_2010_top_author AS(
 );
 
 
-----------
+
+Time: 103.918968916
+
+
+
+
+
+
+
+
+
+
+Executing: 
 --Query 7
 -- pub_author.aid: JOIN
 DROP VIEW IF EXISTS collaborator CASCADE;
@@ -259,7 +367,19 @@ JOIN author
 ON collaborator_count.aid = author.aid AND colla_num = (SELECT MAX(colla_num) FROM collaborator_count);
 
 
-----------
+
+Time: 146.167607069
+
+
+
+
+
+
+
+
+
+
+Executing: 
 -- Query 8
 -- pub_author.aid: GROUP BY
 DROP VIEW IF EXISTS page_count_8 CASCADE;
@@ -278,7 +398,19 @@ WHERE total_page >= 4000
 ORDER by total_page DESC;
 
 
-----------
+
+Time: 27.8302490711
+
+
+
+
+
+
+
+
+
+
+Executing: 
 -- Query 9
 -- pub_author.aid: GROUP BY
 DROP VIEW IF EXISTS pub_count_9 CASCADE;
@@ -303,7 +435,19 @@ JOIN author USING (aid)
 WHERE rank <= 10
 ORDER BY rank;
 
-----------
+
+Time: 20.0785770416
+
+
+
+
+
+
+
+
+
+
+Executing: 
 DROP INDEX IF EXISTS pub_author_aid_index;
 
 
@@ -311,7 +455,19 @@ DROP INDEX IF EXISTS pub_author_aid_index;
 CREATE INDEX pub_author_pubid_index ON pub_author (pubid);
 ANALYZE;
 
-----------
+
+Time: 21.2388570309
+
+
+
+
+
+
+
+
+
+
+Executing: 
 -- Query 2B
 -- pub_author.pubid: JOIN
 DROP VIEW IF EXISTS pub_count_2B CASCADE;
@@ -334,7 +490,19 @@ JOIN author USING (aid)
 WHERE rank <= 10
 ORDER BY rank;
 
-----------
+
+Time: 30.0524401665
+
+
+
+
+
+
+
+
+
+
+Executing: 
 -- Query 3 : Author: Yan Zhang
 -- Query 3A
 -- pub_author.pubid: JOIN
@@ -355,7 +523,19 @@ LEFT JOIN incollection ON pub_info_3A.pubid = incollection.pubid
 LEFT JOIN inproceedings ON pub_info_3A.pubid = inproceedings.pubid;
 
 
-----------
+
+Time: 2.95413613319
+
+
+
+
+
+
+
+
+
+
+Executing: 
 -- Query 3B
 -- pub_author.pubid: JOIN
 
@@ -377,7 +557,19 @@ JOIN inproceedings USING (pubid)
 WHERE inproceedings.booktitle = 'CSCWD';
 
 
-----------
+
+Time: 0.678797006607
+
+
+
+
+
+
+
+
+
+
+Executing: 
 --Query 4A:
 -- pub_author.pubid: JOIN
 
@@ -410,7 +602,19 @@ CREATE VIEW P10K5 AS(
 SELECT name
 FROM author JOIN P10K5 ON (author.aid = P10K5.aid);
 
-----------
+
+Time: 0.508478879929
+
+
+
+
+
+
+
+
+
+
+Executing: 
 --Query 4B:
 DROP VIEW IF EXISTS P10K0 CASCADE;
 CREATE VIEW P10K0 AS(
@@ -421,7 +625,19 @@ CREATE VIEW P10K0 AS(
 SELECT name
 FROM author JOIN P10K0 ON (author.aid = P10K0.aid);
 
-----------
+
+Time: 0.383141040802
+
+
+
+
+
+
+
+
+
+
+Executing: 
 --Query 5 create view only
 DROP VIEW IF EXISTS decade_1970 CASCADE;
 DROP VIEW IF EXISTS decade_1980 CASCADE;
@@ -454,7 +670,19 @@ CREATE VIEW decade_2010 AS(
   WHERE year >= 2010 and year <= 2019
 );
 
-----------
+
+Time: 0.0411560535431
+
+
+
+
+
+
+
+
+
+
+Executing: 
 -- Query 6:
 -- pub_author.pubid: JOIN
 DROP VIEW IF EXISTS decade_1970_top_author CASCADE;
@@ -517,7 +745,19 @@ CREATE VIEW decade_2010_top_author AS(
 );
 
 
-----------
+
+Time: 111.457553864
+
+
+
+
+
+
+
+
+
+
+Executing: 
 --Query 7
 -- pub_author.pubid: JOIN
 DROP VIEW IF EXISTS collaborator CASCADE;
@@ -543,7 +783,19 @@ JOIN author
 ON collaborator_count.aid = author.aid AND colla_num = (SELECT MAX(colla_num) FROM collaborator_count);
 
 
-----------
+
+Time: 159.4942801
+
+
+
+
+
+
+
+
+
+
+Executing: 
 -- Query 8
 -- select the authors who have writen more than 4000 pages of publication
 -- pub_author.pubid: JOIN
@@ -563,7 +815,19 @@ WHERE total_page >= 4000
 ORDER by total_page DESC;
 
 
-----------
+
+Time: 26.5071268082
+
+
+
+
+
+
+
+
+
+
+Executing: 
 -- Query 9
 -- pub_author.aid
 -- pub_author.pubid: JOIN
@@ -591,14 +855,38 @@ WHERE rank <= 10
 ORDER BY rank;
 
 
-----------
+
+Time: 18.0092771053
+
+
+
+
+
+
+
+
+
+
+Executing: 
 DROP INDEX IF EXISTS pub_author_pubid_index;
 
 /*********************** publication.year ************************/
 CREATE INDEX publication_year_index ON publication (year);
 ANALYZE;
 
-----------
+
+Time: 22.2693660259
+
+
+
+
+
+
+
+
+
+
+Executing: 
 -- Query 3 : Author: Yan Zhang
 -- Query 3A
 -- publication.year: WHERE
@@ -618,7 +906,19 @@ LEFT JOIN book ON pub_info_3A.pubid = book.pubid
 LEFT JOIN incollection ON pub_info_3A.pubid = incollection.pubid
 LEFT JOIN inproceedings ON pub_info_3A.pubid = inproceedings.pubid;
 
-----------
+
+Time: 2.16754198074
+
+
+
+
+
+
+
+
+
+
+Executing: 
 -- Query 3B
 -- publication.year: WHERE
 
@@ -640,7 +940,19 @@ JOIN inproceedings USING (pubid)
 WHERE inproceedings.booktitle = 'CSCWD';
 
 
-----------
+
+Time: 0.465638875961
+
+
+
+
+
+
+
+
+
+
+Executing: 
 --Query 5:
 -- publication.year: WHERE
 DROP VIEW IF EXISTS decade_1970 CASCADE;
@@ -684,7 +996,19 @@ UNION
 UNION
 (SELECT '2010-2019' AS decade, count(*) AS num FROM decade_2010);
 
-----------
+
+Time: 0.566909074783
+
+
+
+
+
+
+
+
+
+
+Executing: 
 DROP INDEX IF EXISTS publication_year_index;
 
 
@@ -692,7 +1016,19 @@ DROP INDEX IF EXISTS publication_year_index;
 CREATE INDEX publication_type_index ON publication (type);
 ANALYZE;
 
-----------
+
+Time: 136.31231904
+
+
+
+
+
+
+
+
+
+
+Executing: 
 -- Query 3B
 -- publication.type: WHERE
 
@@ -714,7 +1050,19 @@ JOIN inproceedings USING (pubid)
 WHERE inproceedings.booktitle = 'CSCWD';
 
 
-----------
+
+Time: 0.411596059799
+
+
+
+
+
+
+
+
+
+
+Executing: 
 -- Query 9
 -- publication.type: WHERE
 
@@ -740,7 +1088,19 @@ JOIN author USING (aid)
 WHERE rank <= 10
 ORDER BY rank;
 
-----------
+
+Time: 18.0140969753
+
+
+
+
+
+
+
+
+
+
+Executing: 
 DROP INDEX IF EXISTS publication_type_index;
 
 
@@ -748,7 +1108,19 @@ DROP INDEX IF EXISTS publication_type_index;
 CREATE INDEX article_journal_index ON article (journal);
 ANALYZE;
 
-----------
+
+Time: 45.5556230545
+
+
+
+
+
+
+
+
+
+
+Executing: 
 -- Query 3B
 -- article.journal: WHERE
 
@@ -770,7 +1142,19 @@ JOIN inproceedings USING (pubid)
 WHERE inproceedings.booktitle = 'CSCWD';
 
 
-----------
+
+Time: 0.215848922729
+
+
+
+
+
+
+
+
+
+
+Executing: 
 --Query 4A:
 -- article.journal: WHERE
 
@@ -803,7 +1187,19 @@ CREATE VIEW P10K5 AS(
 SELECT name
 FROM author JOIN P10K5 ON (author.aid = P10K5.aid);
 
-----------
+
+Time: 0.233460903168
+
+
+
+
+
+
+
+
+
+
+Executing: 
 --Query 4B:
 DROP VIEW IF EXISTS P10K0 CASCADE;
 CREATE VIEW P10K0 AS(
@@ -815,7 +1211,19 @@ SELECT name
 FROM author JOIN P10K0 ON (author.aid = P10K0.aid);
 
 
-----------
+
+Time: 0.22274684906
+
+
+
+
+
+
+
+
+
+
+Executing: 
 DROP INDEX IF EXISTS article_journal_index;
 
 
@@ -823,7 +1231,19 @@ DROP INDEX IF EXISTS article_journal_index;
 CREATE INDEX inproceedings_booktitle_index ON inproceedings (booktitle);
 ANALYZE;
 
-----------
+
+Time: 28.2846610546
+
+
+
+
+
+
+
+
+
+
+Executing: 
 -- Query 3B
 -- inproceedings.booktitle: WHERE
 
@@ -845,7 +1265,19 @@ JOIN inproceedings USING (pubid)
 WHERE inproceedings.booktitle = 'CSCWD';
 
 
-----------
+
+Time: 0.209999799728
+
+
+
+
+
+
+
+
+
+
+Executing: 
 --Query 4A:
 -- inproceedings.booktitle: WHERE
 
@@ -878,7 +1310,19 @@ CREATE VIEW P10K5 AS(
 SELECT name
 FROM author JOIN P10K5 ON (author.aid = P10K5.aid);
 
-----------
+
+Time: 0.218886852264
+
+
+
+
+
+
+
+
+
+
+Executing: 
 --Query 4B:
 DROP VIEW IF EXISTS P10K0 CASCADE;
 CREATE VIEW P10K0 AS(
@@ -889,7 +1333,19 @@ CREATE VIEW P10K0 AS(
 SELECT name
 FROM author JOIN P10K0 ON (author.aid = P10K0.aid);
 
-----------
+
+Time: 0.188795089722
+
+
+
+
+
+
+
+
+
+
+Executing: 
 DROP INDEX IF EXISTS inproceedings_booktitle_index;
 
 
@@ -902,7 +1358,19 @@ CREATE INDEX pub_author_aid_index ON pub_author (aid);
 CREATE INDEX pub_author_pubid_index ON pub_author (pubid);
 ANALYZE;
 
-----------
+
+Time: 44.748290062
+
+
+
+
+
+
+
+
+
+
+Executing: 
 -- Query 2B
 
 
@@ -926,7 +1394,19 @@ JOIN author USING (aid)
 WHERE rank <= 10
 ORDER BY rank;
 
-----------
+
+Time: 34.100703001
+
+
+
+
+
+
+
+
+
+
+Executing: 
 --Query 5 create view only
 DROP VIEW IF EXISTS decade_1970 CASCADE;
 DROP VIEW IF EXISTS decade_1980 CASCADE;
@@ -959,7 +1439,19 @@ CREATE VIEW decade_2010 AS(
   WHERE year >= 2010 and year <= 2019
 );
 
-----------
+
+Time: 0.0317161083221
+
+
+
+
+
+
+
+
+
+
+Executing: 
 -- Query 6:
 -- pub_author.aid
 -- pub_author.pubid
@@ -1023,7 +1515,19 @@ CREATE VIEW decade_2010_top_author AS(
 );
 
 
-----------
+
+Time: 110.363498926
+
+
+
+
+
+
+
+
+
+
+Executing: 
 --Query 7
 -- pub_author.aid
 -- pub_author.pubid
@@ -1050,7 +1554,19 @@ JOIN author
 ON collaborator_count.aid = author.aid AND colla_num = (SELECT MAX(colla_num) FROM collaborator_count);
 
 
-----------
+
+Time: 156.974856138
+
+
+
+
+
+
+
+
+
+
+Executing: 
 -- Query 8
 -- pub_author.pubid
 -- pub_author.aid
@@ -1073,7 +1589,19 @@ ORDER by total_page DESC;
 
 
 
-----------
+
+Time: 23.9592430592
+
+
+
+
+
+
+
+
+
+
+Executing: 
 /*********************** pub_author.aid ************************/
 /*********************** pub_author.pubid ************************/
 /*********************** publication.year ************************/
@@ -1081,7 +1609,19 @@ ORDER by total_page DESC;
 CREATE INDEX publication_year_index ON publication (year);
 ANALYZE;
 
-----------
+
+Time: 20.960657835
+
+
+
+
+
+
+
+
+
+
+Executing: 
 -- Query 3 : Author: Yan Zhang
 -- Query 3A
 -- pub_author.aid
@@ -1107,7 +1647,19 @@ LEFT JOIN incollection ON pub_info_3A.pubid = incollection.pubid
 LEFT JOIN inproceedings ON pub_info_3A.pubid = inproceedings.pubid;
 
 
-----------
+
+Time: 0.257812976837
+
+
+
+
+
+
+
+
+
+
+Executing: 
 /*********************** pub_author.aid ************************/
 /*********************** pub_author.pubid ************************/
 /*********************** publication.year ************************/
@@ -1121,7 +1673,19 @@ CREATE INDEX inproceedings_booktitle_index ON inproceedings (booktitle);
 ANALYZE;
 
 
-----------
+
+Time: 197.818564892
+
+
+
+
+
+
+
+
+
+
+Executing: 
 -- Query 3B
 
 DROP VIEW IF EXISTS pub_info_3B CASCADE;
@@ -1141,7 +1705,19 @@ SELECT * FROM pub_info_3B
 JOIN inproceedings USING (pubid)
 WHERE inproceedings.booktitle = 'CSCWD';
 
-----------
+
+Time: 0.329625844955
+
+
+
+
+
+
+
+
+
+
+Executing: 
 /*********************** pub_author.aid ************************/
 /*********************** pub_author.pubid ************************/
 /*********************** inproceedings.booktitle ************************/
@@ -1151,7 +1727,19 @@ DROP INDEX IF EXISTS publication_year_index;
 DROP INDEX IF EXISTS publication_type_index;
 ANALYZE;
 
-----------
+
+Time: 7.79131698608
+
+
+
+
+
+
+
+
+
+
+Executing: 
 --Query 4A:
 -- pub_author.aid
 -- pub_author.pubid
@@ -1190,7 +1778,19 @@ CREATE VIEW P10K5 AS(
 SELECT name
 FROM author JOIN P10K5 ON (author.aid = P10K5.aid);
 
-----------
+
+Time: 0.0439610481262
+
+
+
+
+
+
+
+
+
+
+Executing: 
 --Query 4B:
 DROP VIEW IF EXISTS P10K0 CASCADE;
 CREATE VIEW P10K0 AS(
@@ -1202,7 +1802,19 @@ SELECT name
 FROM author JOIN P10K0 ON (author.aid = P10K0.aid);
 
 
-----------
+
+Time: 0.0333919525146
+
+
+
+
+
+
+
+
+
+
+Executing: 
 /*********************** pub_author.aid ************************/
 /*********************** pub_author.pubid ************************/
 /*********************** publication.type ************************/
@@ -1212,7 +1824,19 @@ DROP INDEX IF EXISTS inproceedings_booktitle_index;
 CREATE INDEX publication_type_index ON publication (type);
 ANALYZE;
 
-----------
+
+Time: 138.971700907
+
+
+
+
+
+
+
+
+
+
+Executing: 
 -- Query 9
 -- pub_author.aid
 -- pub_author.pubid
@@ -1239,7 +1863,19 @@ JOIN author USING (aid)
 WHERE rank <= 10
 ORDER BY rank;
 
-----------
+
+Time: 22.9053790569
+
+
+
+
+
+
+
+
+
+
+Executing: 
 /*********************** publication.year ************************/
 
 DROP INDEX IF EXISTS pub_author_aid_index;
@@ -1248,7 +1884,19 @@ DROP INDEX IF EXISTS publication_type_index;
 CREATE INDEX publication_year_index ON publication (year);
 ANALYZE;
 
-----------
+
+Time: 26.5675590038
+
+
+
+
+
+
+
+
+
+
+Executing: 
 --Query 5:
 -- publication.year
 DROP VIEW IF EXISTS decade_1970 CASCADE;
@@ -1292,5 +1940,28 @@ UNION
 UNION
 (SELECT '2010-2019' AS decade, count(*) AS num FROM decade_2010);
 
-----------
+
+Time: 0.559445858002
+
+
+
+
+
+
+
+
+
+
+Executing: 
 DROP INDEX IF EXISTS publication_year_index;
+Time: 0.0490040779114
+
+
+
+
+
+
+
+
+
+

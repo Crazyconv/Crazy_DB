@@ -20,7 +20,7 @@ CREATE VIEW pub_rank_2A AS(
   FROM pub_count_2A
 );
 
-SELECT pub_rank_2A.rank, author.name
+EXPLAIN SELECT pub_rank_2A.rank, author.name
 FROM pub_rank_2A
 JOIN author USING (aid)
 WHERE rank <= 10
@@ -44,7 +44,7 @@ CREATE VIEW pub_rank_2B AS(
   FROM pub_count_2B
 );
 
-SELECT pub_rank_2B.rank, author.name
+EXPLAIN SELECT pub_rank_2B.rank, author.name
 FROM pub_rank_2B
 JOIN author USING (aid)
 WHERE rank <= 10
@@ -64,7 +64,7 @@ CREATE VIEW pub_info_3A AS(
   WHERE author.name = 'Yan Zhang' and publication.year = 2012
 );
 
-SELECT * FROM pub_info_3A
+EXPLAIN SELECT * FROM pub_info_3A
 LEFT JOIN article ON pub_info_3A.pubid = article.pubid
 LEFT JOIN book ON pub_info_3A.pubid = book.pubid
 LEFT JOIN incollection ON pub_info_3A.pubid = incollection.pubid
@@ -84,11 +84,11 @@ CREATE VIEW pub_info_3B AS(
   WHERE author.name = 'Wei Wang' AND year = 2009 AND type = 'conf'
 );
 
-SELECT * FROM pub_info_3B
+EXPLAIN SELECT * FROM pub_info_3B
 JOIN article USING (pubid)
 WHERE article.journal = 'CSCWD';
 
-SELECT * FROM pub_info_3B
+EXPLAIN SELECT * FROM pub_info_3B
 JOIN inproceedings USING (pubid)
 WHERE inproceedings.booktitle = 'CSCWD';
 
@@ -123,7 +123,7 @@ CREATE VIEW P10K5 AS(
   INTERSECT
   SELECT aid FROM KDD_4A WHERE KDD_num >= 5
 );
-SELECT name
+EXPLAIN SELECT name
 FROM author JOIN P10K5 ON (author.aid = P10K5.aid);
 
 ----------
@@ -134,7 +134,7 @@ CREATE VIEW P10K0 AS(
   EXCEPT
   SELECT aid FROM KDD_4A
 );
-SELECT name
+EXPLAIN SELECT name
 FROM author JOIN P10K0 ON (author.aid = P10K0.aid);
 
 ----------
@@ -210,6 +210,7 @@ CREATE VIEW decade_2010_top_author AS(
   GROUP BY aid
 );
 
+EXPLAIN 
 (
   SELECT '1970 - 1979' AS decade, name 
   FROM decade_1970_top_author JOIN author ON 
@@ -253,7 +254,7 @@ CREATE VIEW collaborator_count AS(
   ORDER BY colla_num DESC
 );
 
-SELECT author.name
+EXPLAIN SELECT author.name
 FROM collaborator_count
 JOIN author
 ON collaborator_count.aid = author.aid AND colla_num = (SELECT MAX(colla_num) FROM collaborator_count);
@@ -271,7 +272,7 @@ CREATE VIEW page_count_8 AS(
   GROUP BY aid
 );
 
-SELECT author.name, total_page
+EXPLAIN SELECT author.name, total_page
 FROM page_count_8
 JOIN author USING (aid)
 WHERE total_page >= 4000
@@ -297,7 +298,7 @@ CREATE VIEW pub_rank_9 AS(
   FROM pub_count_9
 );
 
-SELECT pub_rank_9.rank, author.name
+EXPLAIN SELECT pub_rank_9.rank, author.name
 FROM pub_rank_9
 JOIN author USING (aid)
 WHERE rank <= 10
@@ -328,7 +329,7 @@ CREATE VIEW pub_rank_2B AS(
   FROM pub_count_2B
 );
 
-SELECT pub_rank_2B.rank, author.name
+EXPLAIN SELECT pub_rank_2B.rank, author.name
 FROM pub_rank_2B
 JOIN author USING (aid)
 WHERE rank <= 10
@@ -348,7 +349,7 @@ CREATE VIEW pub_info_3A AS(
   WHERE author.name = 'Yan Zhang' and publication.year = 2012
 );
 
-SELECT * FROM pub_info_3A
+EXPLAIN SELECT * FROM pub_info_3A
 LEFT JOIN article ON pub_info_3A.pubid = article.pubid
 LEFT JOIN book ON pub_info_3A.pubid = book.pubid
 LEFT JOIN incollection ON pub_info_3A.pubid = incollection.pubid
@@ -368,11 +369,11 @@ CREATE VIEW pub_info_3B AS(
   WHERE author.name = 'Wei Wang' AND year = 2009 AND type = 'conf'
 );
 
-SELECT * FROM pub_info_3B
+EXPLAIN SELECT * FROM pub_info_3B
 JOIN article USING (pubid)
 WHERE article.journal = 'CSCWD';
 
-SELECT * FROM pub_info_3B
+EXPLAIN SELECT * FROM pub_info_3B
 JOIN inproceedings USING (pubid)
 WHERE inproceedings.booktitle = 'CSCWD';
 
@@ -407,7 +408,7 @@ CREATE VIEW P10K5 AS(
   INTERSECT
   SELECT aid FROM KDD_4A WHERE KDD_num >= 5
 );
-SELECT name
+EXPLAIN SELECT name
 FROM author JOIN P10K5 ON (author.aid = P10K5.aid);
 
 ----------
@@ -418,7 +419,7 @@ CREATE VIEW P10K0 AS(
   EXCEPT
   SELECT aid FROM KDD_4A
 );
-SELECT name
+EXPLAIN SELECT name
 FROM author JOIN P10K0 ON (author.aid = P10K0.aid);
 
 ----------
@@ -493,7 +494,7 @@ CREATE VIEW decade_2010_top_author AS(
   FROM decade_2010 JOIN pub_author USING (pubid)
   GROUP BY aid
 );
-
+EXPLAIN 
 (
   SELECT '1970 - 1979' AS decade, name 
   FROM decade_1970_top_author JOIN author ON 
@@ -537,7 +538,7 @@ CREATE VIEW collaborator_count AS(
   ORDER BY colla_num DESC
 );
 
-SELECT author.name
+EXPLAIN SELECT author.name
 FROM collaborator_count
 JOIN author
 ON collaborator_count.aid = author.aid AND colla_num = (SELECT MAX(colla_num) FROM collaborator_count);
@@ -556,7 +557,7 @@ CREATE VIEW page_count_8 AS(
   GROUP BY aid
 );
 
-SELECT author.name, total_page
+EXPLAIN SELECT author.name, total_page
 FROM page_count_8
 JOIN author USING (aid)
 WHERE total_page >= 4000
@@ -584,7 +585,7 @@ CREATE VIEW pub_rank_9 AS(
   FROM pub_count_9
 );
 
-SELECT pub_rank_9.rank, author.name
+EXPLAIN SELECT pub_rank_9.rank, author.name
 FROM pub_rank_9
 JOIN author USING (aid)
 WHERE rank <= 10
@@ -612,7 +613,7 @@ CREATE VIEW pub_info_3A AS(
   WHERE author.name = 'Yan Zhang' and publication.year = 2012
 );
 
-SELECT * FROM pub_info_3A
+EXPLAIN SELECT * FROM pub_info_3A
 LEFT JOIN article ON pub_info_3A.pubid = article.pubid
 LEFT JOIN book ON pub_info_3A.pubid = book.pubid
 LEFT JOIN incollection ON pub_info_3A.pubid = incollection.pubid
@@ -631,11 +632,11 @@ CREATE VIEW pub_info_3B AS(
   WHERE author.name = 'Wei Wang' AND year = 2009 AND type = 'conf'
 );
 
-SELECT * FROM pub_info_3B
+EXPLAIN SELECT * FROM pub_info_3B
 JOIN article USING (pubid)
 WHERE article.journal = 'CSCWD';
 
-SELECT * FROM pub_info_3B
+EXPLAIN SELECT * FROM pub_info_3B
 JOIN inproceedings USING (pubid)
 WHERE inproceedings.booktitle = 'CSCWD';
 
@@ -673,7 +674,7 @@ CREATE VIEW decade_2010 AS(
   SELECT pubid FROM publication
   WHERE year >= 2010 and year <= 2019
 );
-
+EXPLAIN 
 (SELECT '1970-1979' AS decade, count(*) AS num FROM decade_1970)
 UNION
 (SELECT '1980-1989' AS decade, count(*) AS num FROM decade_1980)
@@ -705,11 +706,11 @@ CREATE VIEW pub_info_3B AS(
   WHERE author.name = 'Wei Wang' AND year = 2009 AND type = 'conf'
 );
 
-SELECT * FROM pub_info_3B
+EXPLAIN SELECT * FROM pub_info_3B
 JOIN article USING (pubid)
 WHERE article.journal = 'CSCWD';
 
-SELECT * FROM pub_info_3B
+EXPLAIN SELECT * FROM pub_info_3B
 JOIN inproceedings USING (pubid)
 WHERE inproceedings.booktitle = 'CSCWD';
 
@@ -734,7 +735,7 @@ CREATE VIEW pub_rank_9 AS(
   FROM pub_count_9
 );
 
-SELECT pub_rank_9.rank, author.name
+EXPLAIN SELECT pub_rank_9.rank, author.name
 FROM pub_rank_9
 JOIN author USING (aid)
 WHERE rank <= 10
@@ -761,11 +762,11 @@ CREATE VIEW pub_info_3B AS(
   WHERE author.name = 'Wei Wang' AND year = 2009 AND type = 'conf'
 );
 
-SELECT * FROM pub_info_3B
+EXPLAIN SELECT * FROM pub_info_3B
 JOIN article USING (pubid)
 WHERE article.journal = 'CSCWD';
 
-SELECT * FROM pub_info_3B
+EXPLAIN SELECT * FROM pub_info_3B
 JOIN inproceedings USING (pubid)
 WHERE inproceedings.booktitle = 'CSCWD';
 
@@ -800,7 +801,7 @@ CREATE VIEW P10K5 AS(
   INTERSECT
   SELECT aid FROM KDD_4A WHERE KDD_num >= 5
 );
-SELECT name
+EXPLAIN SELECT name
 FROM author JOIN P10K5 ON (author.aid = P10K5.aid);
 
 ----------
@@ -811,7 +812,7 @@ CREATE VIEW P10K0 AS(
   EXCEPT
   SELECT aid FROM KDD_4A
 );
-SELECT name
+EXPLAIN SELECT name
 FROM author JOIN P10K0 ON (author.aid = P10K0.aid);
 
 
@@ -836,11 +837,11 @@ CREATE VIEW pub_info_3B AS(
   WHERE author.name = 'Wei Wang' AND year = 2009 AND type = 'conf'
 );
 
-SELECT * FROM pub_info_3B
+EXPLAIN SELECT * FROM pub_info_3B
 JOIN article USING (pubid)
 WHERE article.journal = 'CSCWD';
 
-SELECT * FROM pub_info_3B
+EXPLAIN SELECT * FROM pub_info_3B
 JOIN inproceedings USING (pubid)
 WHERE inproceedings.booktitle = 'CSCWD';
 
@@ -875,7 +876,7 @@ CREATE VIEW P10K5 AS(
   INTERSECT
   SELECT aid FROM KDD_4A WHERE KDD_num >= 5
 );
-SELECT name
+EXPLAIN SELECT name
 FROM author JOIN P10K5 ON (author.aid = P10K5.aid);
 
 ----------
@@ -886,7 +887,7 @@ CREATE VIEW P10K0 AS(
   EXCEPT
   SELECT aid FROM KDD_4A
 );
-SELECT name
+EXPLAIN SELECT name
 FROM author JOIN P10K0 ON (author.aid = P10K0.aid);
 
 ----------
@@ -920,7 +921,7 @@ CREATE VIEW pub_rank_2B AS(
   FROM pub_count_2B
 );
 
-SELECT pub_rank_2B.rank, author.name
+EXPLAIN SELECT pub_rank_2B.rank, author.name
 FROM pub_rank_2B
 JOIN author USING (aid)
 WHERE rank <= 10
@@ -999,7 +1000,7 @@ CREATE VIEW decade_2010_top_author AS(
   FROM decade_2010 JOIN pub_author USING (pubid)
   GROUP BY aid
 );
-
+EXPLAIN 
 (
   SELECT '1970 - 1979' AS decade, name 
   FROM decade_1970_top_author JOIN author ON 
@@ -1044,7 +1045,7 @@ CREATE VIEW collaborator_count AS(
   ORDER BY colla_num DESC
 );
 
-SELECT author.name
+EXPLAIN SELECT author.name
 FROM collaborator_count
 JOIN author
 ON collaborator_count.aid = author.aid AND colla_num = (SELECT MAX(colla_num) FROM collaborator_count);
@@ -1064,7 +1065,7 @@ CREATE VIEW page_count_8 AS(
   GROUP BY aid
 );
 
-SELECT author.name, total_page
+EXPLAIN SELECT author.name, total_page
 FROM page_count_8
 JOIN author USING (aid)
 WHERE total_page >= 4000
@@ -1100,7 +1101,7 @@ CREATE VIEW pub_info_3A AS(
   WHERE author.name = 'Yan Zhang' and publication.year = 2012
 );
 
-SELECT * FROM pub_info_3A
+EXPLAIN SELECT * FROM pub_info_3A
 LEFT JOIN article ON pub_info_3A.pubid = article.pubid
 LEFT JOIN book ON pub_info_3A.pubid = book.pubid
 LEFT JOIN incollection ON pub_info_3A.pubid = incollection.pubid
@@ -1133,11 +1134,11 @@ CREATE VIEW pub_info_3B AS(
   WHERE author.name = 'Wei Wang' AND year = 2009 AND type = 'conf'
 );
 
-SELECT * FROM pub_info_3B
+EXPLAIN SELECT * FROM pub_info_3B
 JOIN article USING (pubid)
 WHERE article.journal = 'CSCWD';
 
-SELECT * FROM pub_info_3B
+EXPLAIN SELECT * FROM pub_info_3B
 JOIN inproceedings USING (pubid)
 WHERE inproceedings.booktitle = 'CSCWD';
 
@@ -1187,7 +1188,7 @@ CREATE VIEW P10K5 AS(
   INTERSECT
   SELECT aid FROM KDD_4A WHERE KDD_num >= 5
 );
-SELECT name
+EXPLAIN SELECT name
 FROM author JOIN P10K5 ON (author.aid = P10K5.aid);
 
 ----------
@@ -1198,7 +1199,7 @@ CREATE VIEW P10K0 AS(
   EXCEPT
   SELECT aid FROM KDD_4A
 );
-SELECT name
+EXPLAIN SELECT name
 FROM author JOIN P10K0 ON (author.aid = P10K0.aid);
 
 
@@ -1233,7 +1234,7 @@ CREATE VIEW pub_rank_9 AS(
   FROM pub_count_9
 );
 
-SELECT pub_rank_9.rank, author.name
+EXPLAIN SELECT pub_rank_9.rank, author.name
 FROM pub_rank_9
 JOIN author USING (aid)
 WHERE rank <= 10
@@ -1281,7 +1282,7 @@ CREATE VIEW decade_2010 AS(
   SELECT pubid FROM publication
   WHERE year >= 2010 and year <= 2019
 );
-
+EXPLAIN 
 (SELECT '1970-1979' AS decade, count(*) AS num FROM decade_1970)
 UNION
 (SELECT '1980-1989' AS decade, count(*) AS num FROM decade_1980)
