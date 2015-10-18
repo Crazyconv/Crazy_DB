@@ -1,3 +1,11 @@
+
+DROP INDEX IF EXISTS pub_author_aid_index;
+DROP INDEX IF EXISTS pub_author_pubid_index;
+DROP INDEX IF EXISTS publication_year_index;
+DROP INDEX IF EXISTS publication_type_index;
+DROP INDEX IF EXISTS article_journal_index;
+DROP INDEX IF EXISTS inproceedings_booktitle_index;
+
 CREATE INDEX pub_author_aid_index ON pub_author (aid);
 CREATE INDEX pub_author_pubid_index ON pub_author (pubid);
 CREATE INDEX publication_year_index ON publication (year);
@@ -360,8 +368,8 @@ JOIN author USING (aid)
 WHERE rank <= 10
 ORDER BY rank;
 
-
 ----------
+
 DROP INDEX IF EXISTS pub_author_aid_index;
 DROP INDEX IF EXISTS pub_author_pubid_index;
 DROP INDEX IF EXISTS publication_year_index;
