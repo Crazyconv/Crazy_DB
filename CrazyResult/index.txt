@@ -5,7 +5,7 @@ CREATE INDEX pub_author_aid_index ON pub_author (aid);
 ANALYZE;
 
 
-Time: 40.4223370552
+Time: 34.5286538601
 
 
 
@@ -40,7 +40,7 @@ ORDER BY rank;
 
 
 
-Time: 4.7890958786
+Time: 4.89515709877
 
 
 
@@ -75,7 +75,7 @@ WHERE rank <= 10
 ORDER BY rank;
 
 
-Time: 47.4179098606
+Time: 30.3416059017
 
 
 
@@ -108,7 +108,7 @@ LEFT JOIN inproceedings ON pub_info_3A.pubid = inproceedings.pubid;
 
 
 
-Time: 0.417325019836
+Time: 0.272124052048
 
 
 
@@ -142,7 +142,7 @@ WHERE inproceedings.booktitle = 'CSCWD';
 
 
 
-Time: 0.579441070557
+Time: 0.556781053543
 
 
 
@@ -187,7 +187,7 @@ SELECT name
 FROM author JOIN P10K5 ON (author.aid = P10K5.aid);
 
 
-Time: 0.946009159088
+Time: 0.750477075577
 
 
 
@@ -210,7 +210,7 @@ SELECT name
 FROM author JOIN P10K0 ON (author.aid = P10K0.aid);
 
 
-Time: 0.589604854584
+Time: 0.649099111557
 
 
 
@@ -255,7 +255,7 @@ CREATE VIEW decade_2010 AS(
 );
 
 
-Time: 0.0404870510101
+Time: 0.0191180706024
 
 
 
@@ -330,7 +330,7 @@ CREATE VIEW decade_2010_top_author AS(
 
 
 
-Time: 123.201589823
+Time: 103.918968916
 
 
 
@@ -368,7 +368,7 @@ ON collaborator_count.aid = author.aid AND colla_num = (SELECT MAX(colla_num) FR
 
 
 
-Time: 155.367338896
+Time: 146.167607069
 
 
 
@@ -399,7 +399,7 @@ ORDER by total_page DESC;
 
 
 
-Time: 25.3394341469
+Time: 27.8302490711
 
 
 
@@ -436,7 +436,7 @@ WHERE rank <= 10
 ORDER BY rank;
 
 
-Time: 21.7077200413
+Time: 20.0785770416
 
 
 
@@ -456,7 +456,7 @@ CREATE INDEX pub_author_pubid_index ON pub_author (pubid);
 ANALYZE;
 
 
-Time: 20.6761939526
+Time: 21.2388570309
 
 
 
@@ -491,7 +491,7 @@ WHERE rank <= 10
 ORDER BY rank;
 
 
-Time: 29.1085600853
+Time: 30.0524401665
 
 
 
@@ -524,7 +524,7 @@ LEFT JOIN inproceedings ON pub_info_3A.pubid = inproceedings.pubid;
 
 
 
-Time: 3.60197901726
+Time: 2.95413613319
 
 
 
@@ -558,7 +558,7 @@ WHERE inproceedings.booktitle = 'CSCWD';
 
 
 
-Time: 0.591872930527
+Time: 0.678797006607
 
 
 
@@ -603,7 +603,7 @@ SELECT name
 FROM author JOIN P10K5 ON (author.aid = P10K5.aid);
 
 
-Time: 0.39102101326
+Time: 0.508478879929
 
 
 
@@ -626,7 +626,7 @@ SELECT name
 FROM author JOIN P10K0 ON (author.aid = P10K0.aid);
 
 
-Time: 0.394240856171
+Time: 0.383141040802
 
 
 
@@ -671,7 +671,7 @@ CREATE VIEW decade_2010 AS(
 );
 
 
-Time: 0.0416460037231
+Time: 0.0411560535431
 
 
 
@@ -746,7 +746,7 @@ CREATE VIEW decade_2010_top_author AS(
 
 
 
-Time: 102.279093027
+Time: 111.457553864
 
 
 
@@ -784,7 +784,7 @@ ON collaborator_count.aid = author.aid AND colla_num = (SELECT MAX(colla_num) FR
 
 
 
-Time: 155.252144098
+Time: 159.4942801
 
 
 
@@ -816,7 +816,7 @@ ORDER by total_page DESC;
 
 
 
-Time: 28.4191598892
+Time: 26.5071268082
 
 
 
@@ -856,7 +856,7 @@ ORDER BY rank;
 
 
 
-Time: 21.7861149311
+Time: 18.0092771053
 
 
 
@@ -875,7 +875,7 @@ CREATE INDEX publication_year_index ON publication (year);
 ANALYZE;
 
 
-Time: 21.2602310181
+Time: 22.2693660259
 
 
 
@@ -907,7 +907,7 @@ LEFT JOIN incollection ON pub_info_3A.pubid = incollection.pubid
 LEFT JOIN inproceedings ON pub_info_3A.pubid = inproceedings.pubid;
 
 
-Time: 2.40498304367
+Time: 2.16754198074
 
 
 
@@ -941,7 +941,7 @@ WHERE inproceedings.booktitle = 'CSCWD';
 
 
 
-Time: 0.66523194313
+Time: 0.465638875961
 
 
 
@@ -997,7 +997,7 @@ UNION
 (SELECT '2010-2019' AS decade, count(*) AS num FROM decade_2010);
 
 
-Time: 0.965372085571
+Time: 0.566909074783
 
 
 
@@ -1017,7 +1017,7 @@ CREATE INDEX publication_type_index ON publication (type);
 ANALYZE;
 
 
-Time: 136.776463985
+Time: 136.31231904
 
 
 
@@ -1051,7 +1051,7 @@ WHERE inproceedings.booktitle = 'CSCWD';
 
 
 
-Time: 0.418811798096
+Time: 0.411596059799
 
 
 
@@ -1089,7 +1089,7 @@ WHERE rank <= 10
 ORDER BY rank;
 
 
-Time: 21.8369731903
+Time: 18.0140969753
 
 
 
@@ -1109,7 +1109,7 @@ CREATE INDEX article_journal_index ON article (journal);
 ANALYZE;
 
 
-Time: 46.168815136
+Time: 45.5556230545
 
 
 
@@ -1143,7 +1143,7 @@ WHERE inproceedings.booktitle = 'CSCWD';
 
 
 
-Time: 0.289016008377
+Time: 0.215848922729
 
 
 
@@ -1188,7 +1188,7 @@ SELECT name
 FROM author JOIN P10K5 ON (author.aid = P10K5.aid);
 
 
-Time: 0.249639034271
+Time: 0.233460903168
 
 
 
@@ -1212,7 +1212,7 @@ FROM author JOIN P10K0 ON (author.aid = P10K0.aid);
 
 
 
-Time: 0.483360052109
+Time: 0.22274684906
 
 
 
@@ -1232,7 +1232,7 @@ CREATE INDEX inproceedings_booktitle_index ON inproceedings (booktitle);
 ANALYZE;
 
 
-Time: 30.1489160061
+Time: 28.2846610546
 
 
 
@@ -1266,7 +1266,7 @@ WHERE inproceedings.booktitle = 'CSCWD';
 
 
 
-Time: 0.21321105957
+Time: 0.209999799728
 
 
 
@@ -1311,7 +1311,7 @@ SELECT name
 FROM author JOIN P10K5 ON (author.aid = P10K5.aid);
 
 
-Time: 0.228170156479
+Time: 0.218886852264
 
 
 
@@ -1334,7 +1334,7 @@ SELECT name
 FROM author JOIN P10K0 ON (author.aid = P10K0.aid);
 
 
-Time: 0.200539112091
+Time: 0.188795089722
 
 
 
@@ -1359,7 +1359,7 @@ CREATE INDEX pub_author_pubid_index ON pub_author (pubid);
 ANALYZE;
 
 
-Time: 45.3808598518
+Time: 44.748290062
 
 
 
@@ -1395,7 +1395,7 @@ WHERE rank <= 10
 ORDER BY rank;
 
 
-Time: 35.1511068344
+Time: 34.100703001
 
 
 
@@ -1440,7 +1440,7 @@ CREATE VIEW decade_2010 AS(
 );
 
 
-Time: 0.0364899635315
+Time: 0.0317161083221
 
 
 
@@ -1516,7 +1516,7 @@ CREATE VIEW decade_2010_top_author AS(
 
 
 
-Time: 109.977170944
+Time: 110.363498926
 
 
 
@@ -1555,7 +1555,7 @@ ON collaborator_count.aid = author.aid AND colla_num = (SELECT MAX(colla_num) FR
 
 
 
-Time: 163.163655996
+Time: 156.974856138
 
 
 
@@ -1590,7 +1590,7 @@ ORDER by total_page DESC;
 
 
 
-Time: 25.8276979923
+Time: 23.9592430592
 
 
 
@@ -1610,7 +1610,7 @@ CREATE INDEX publication_year_index ON publication (year);
 ANALYZE;
 
 
-Time: 21.2438139915
+Time: 20.960657835
 
 
 
@@ -1648,7 +1648,7 @@ LEFT JOIN inproceedings ON pub_info_3A.pubid = inproceedings.pubid;
 
 
 
-Time: 0.254405021667
+Time: 0.257812976837
 
 
 
@@ -1674,7 +1674,7 @@ ANALYZE;
 
 
 
-Time: 197.027887821
+Time: 197.818564892
 
 
 
@@ -1706,7 +1706,7 @@ JOIN inproceedings USING (pubid)
 WHERE inproceedings.booktitle = 'CSCWD';
 
 
-Time: 0.240234851837
+Time: 0.329625844955
 
 
 
@@ -1728,7 +1728,7 @@ DROP INDEX IF EXISTS publication_type_index;
 ANALYZE;
 
 
-Time: 6.96774291992
+Time: 7.79131698608
 
 
 
@@ -1779,7 +1779,7 @@ SELECT name
 FROM author JOIN P10K5 ON (author.aid = P10K5.aid);
 
 
-Time: 0.0446138381958
+Time: 0.0439610481262
 
 
 
@@ -1803,7 +1803,7 @@ FROM author JOIN P10K0 ON (author.aid = P10K0.aid);
 
 
 
-Time: 0.0453100204468
+Time: 0.0333919525146
 
 
 
@@ -1820,12 +1820,12 @@ Executing:
 /*********************** publication.type ************************/
 
 DROP INDEX IF EXISTS article_journal_index;
-DROP INDEX IF EXISTS pinproceedings_booktitle_index;
+DROP INDEX IF EXISTS inproceedings_booktitle_index;
 CREATE INDEX publication_type_index ON publication (type);
 ANALYZE;
 
 
-Time: 145.38606596
+Time: 138.971700907
 
 
 
@@ -1864,7 +1864,7 @@ WHERE rank <= 10
 ORDER BY rank;
 
 
-Time: 19.7097561359
+Time: 22.9053790569
 
 
 
@@ -1880,11 +1880,12 @@ Executing:
 
 DROP INDEX IF EXISTS pub_author_aid_index;
 DROP INDEX IF EXISTS pub_author_pubid_index;
+DROP INDEX IF EXISTS publication_type_index;
 CREATE INDEX publication_year_index ON publication (year);
 ANALYZE;
 
 
-Time: 26.9430789948
+Time: 26.5675590038
 
 
 
@@ -1940,7 +1941,7 @@ UNION
 (SELECT '2010-2019' AS decade, count(*) AS num FROM decade_2010);
 
 
-Time: 0.825057983398
+Time: 0.559445858002
 
 
 
@@ -1953,7 +1954,7 @@ Time: 0.825057983398
 
 Executing: 
 DROP INDEX IF EXISTS publication_year_index;
-Time: 0.0983920097351
+Time: 0.0490040779114
 
 
 
