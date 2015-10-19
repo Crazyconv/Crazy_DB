@@ -1,8 +1,8 @@
 # NTU CZ4031 Lab 1
 
-|          | CZ4031 Lab 1 |
-|----------|--------------|
-| Group ID | 26           |
+|          | CZ4031 Lab 1                         |
+|----------|--------------------------------------|
+| Group ID | 26                                   |
 | Authors  | Guo Jiachun, Xu Mengxing, Zhou Xinzi |
 
 ## What we use?
@@ -23,7 +23,7 @@
   - query_indexed.sql        - Queries with index creation.
   - testdata.sql             - Testing data.
   - index_experiment.sql     - Queries to test index's performance.
-  - index_explain.sql        - Explain Queries.
+  - index_explain.sql        - Explain query planner.
 * CrazyQuery     - Python scripts to run query.
 * CrazyReport    - Final report.
 * CrazyResult    - Query time records in TXT format.
