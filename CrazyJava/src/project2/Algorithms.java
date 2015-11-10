@@ -75,6 +75,7 @@ public class Algorithms {
 		if (outputBuffer.getNumTuples() > 0) {
 			Block targetBlock = rLoader.loadNextBlocks(1)[0];
 			targetBlock.tupleLst = outputBuffer.tupleLst;
+			numIO ++;
 		}
 
 		return numIO;
@@ -314,6 +315,7 @@ public class Algorithms {
 
 		if (rsOutputBuffer.getNumTuples() > 0) {
 			rsWriter.writeBlock(rsOutputBuffer);
+			numIO ++;
 		}
 
 		return numIO;
@@ -349,6 +351,7 @@ public class Algorithms {
 
 		if (sortedBlock.getNumTuples() > 0) {
 			writer.writeBlock(sortedBlock);
+			numIO ++;
 		}
 
 		return numIO;
