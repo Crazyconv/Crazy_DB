@@ -27,110 +27,55 @@ public class Algorithms {
 		// Check Memory enough.
 
 		RelationLoader rLoader = rel.getRelationLoader();
+
 		// Phase 1: create sorted sublist
-		ArrayList<Relation> sortedSubList = new ArrayList<Relation>(Setting.memorySize - 1);
+		ArrayList<Relation> sortedSubList = new ArrayList<>();
 
 		while (rLoader.hasNextBlock()) {
-			Block[] blocks = rLoader.loadNextBlocks(Setting.memorySize);
-
-			ArrayList<Tuple> tuples = new ArrayList<Tuple>(Setting.blockFactor * Setting.memorySize);
-			for (Block b : blocks) {
-				if (b != null) {
-					for (Tuple t : b.tupleLst)
-						tuples.add(t);
-					numIO++;
-				}
-			}
-			Comparator<Tuple> newcomparator = new Comparator<Tuple>() {
-				public int compare(Tuple t1, Tuple t2) {
-					return t1.key - t2.key;
-				}
-			};
-			Collections.sort(tuples, newcomparator);
-
-			// Convert list of tuples to relations
-			Block sortBlock = new Block();
 			Relation sortedSubRelation = new Relation("sorted");
-			RelationWriter rWriter = sortedSubRelation.getRelationWriter();
-			for (Tuple t : tuples) {
-				if (!sortBlock.insertTuple(t)) {
-					rWriter.writeBlock(sortBlock);
-					sortBlock = new Block();
-					sortBlock.insertTuple(t);
-					numIO++;
-				}
-			}
-			rWriter.writeBlock(sortBlock);
+			numIO += getSortedSublist(rLoader, sortedSubRelation);
 			sortedSubList.add(sortedSubRelation);
-			numIO++;
 		}
 
-		// Phase 2: merge
-		int numsortedR = sortedSubList.size();
-		Block outputBuffer = new Block();
-		Block[] inputBuffer = new Block[numsortedR];
-		RelationLoader[] inputLoader = new RelationLoader[numsortedR];
-		Relation sortRelation = new Relation("sorted_relation");
-		RelationWriter rSortWriter = sortRelation.getRelationWriter();
 
-		for (int i = 0; i < numsortedR; i++) {
+		// Phase 2: merge
+		int numOfSortedSublists = sortedSubList.size();
+
+		Block[] inputBuffer = new Block[numOfSortedSublists];
+		RelationLoader[] inputLoader = new RelationLoader[numOfSortedSublists];
+		Block outputBuffer = new Block();
+
+		rLoader.reset();
+//		Relation sortedRelation = new Relation("sorted_relation");
+//		RelationWriter rSortWriter = sortedRelation.getRelationWriter();
+
+		for (int i = 0; i < numOfSortedSublists; i++) {
 			inputLoader[i] = sortedSubList.get(i).getRelationLoader();
-			inputBuffer[i] = inputLoader[i].loadNextBlocks(1)[0];
-			numIO++;
 		}
 
 		while (true) {
-			// load buffers
-			for (int i = 0; i < numsortedR; i++) {
-				if ((inputBuffer[i].getNumTuples() == 0) && inputLoader[i].hasNextBlock()) {
-					inputBuffer[i] = inputLoader[i].loadNextBlocks(1)[0];
-					numIO++;
+			numIO += reloadInputBuffers(inputLoader, inputBuffer);
+
+			ArrayList<Tuple> smallestTuples = new ArrayList<>();
+			getSmallestTuplesFromSublists(inputBuffer, smallestTuples);
+
+			if (smallestTuples.size() == 0) break;
+
+			for (Tuple tuple : smallestTuples) {
+				if (!outputBuffer.insertTuple(tuple)) {
+					Block targetBlock = rLoader.loadNextBlocks(1)[0];
+					targetBlock.tupleLst = outputBuffer.tupleLst;
+					outputBuffer = new Block();
+					outputBuffer.insertTuple(tuple);
+					numIO ++;
 				}
 			}
 
-			// find index of tuple to load
-			int index = 0;
-			for (int i = 0; i < numsortedR; i++) {
-				if (inputBuffer[i].tupleLst.size() > 0){
-					index = i;
-					break;
-				}
-
-			}
-
-			for (int i = index+1; i < numsortedR; i++) {
-				if (inputBuffer[i].tupleLst.size() > 0)
-					if (inputBuffer[i].tupleLst.get(0).key < inputBuffer[index].tupleLst.get(0).key)
-						index = i;
-			}
-
-			Tuple minTuple = inputBuffer[index].tupleLst.get(0);
-			inputBuffer[index].tupleLst.remove(0);
-			if (!outputBuffer.insertTuple(minTuple)){
-				rSortWriter.writeBlock(outputBuffer);
-				outputBuffer = new Block();
-				outputBuffer.insertTuple(minTuple);
-			}
-
-			if (sortRelation.getNumTuples() + outputBuffer.getNumTuples() == rel.getNumTuples())
-				break;
 		}
-		rSortWriter.writeBlock(outputBuffer);
-
-		// Write back to original relation
-		RelationLoader sortedLoader = sortRelation.getRelationLoader();
-		rLoader.reset();
-
-		while(rLoader.hasNextBlock()) {
+		if (outputBuffer.getNumTuples() > 0) {
 			Block targetBlock = rLoader.loadNextBlocks(1)[0];
-			Block sortedBlock = sortedLoader.loadNextBlocks(1)[0];
-			for (int i = 0; i < targetBlock.getNumTuples(); i ++) {
-				targetBlock.tupleLst.set(i, sortedBlock.tupleLst.get(i));
-			}
-			numIO ++;
+			targetBlock.tupleLst = outputBuffer.tupleLst;
 		}
-
-		rel.printRelation(true, true);
 
 		return numIO;
 	}
@@ -380,11 +325,10 @@ public class Algorithms {
 
 		Block[] blocks = loader.loadNextBlocks(Setting.memorySize);
 
-		ArrayList<Tuple> tuples = new ArrayList<Tuple>(Setting.blockFactor * Setting.memorySize);
+		ArrayList<Tuple> tuples = new ArrayList<>();
 		for (Block b : blocks) {
 			if (b != null) {
-				for (Tuple t : b.tupleLst)
-					tuples.add(t);
+				for (Tuple t : b.tupleLst) tuples.add(t);
 				numIO++;
 			}
 		}
@@ -427,9 +371,8 @@ public class Algorithms {
 		int numIO = 0;
 		int smallestKey = Integer.MAX_VALUE;
 		for (Block buffer : buffers) {
-			for (Tuple tuple : buffer.tupleLst) {
-				if (tuple.key < smallestKey) smallestKey = tuple.key;
-			}
+			if (buffer.getNumTuples() > 0 && buffer.tupleLst.get(0).key < smallestKey)
+				smallestKey = buffer.tupleLst.get(0).key ;
 		}
 		for (Block buffer : buffers) {
 			Iterator<Tuple> it = buffer.tupleLst.iterator();
@@ -438,6 +381,8 @@ public class Algorithms {
 				if (tuple.key == smallestKey) {
 					tuples.add(tuple);
 					it.remove();
+				} else {
+					break;
 				}
 			}
 		}
@@ -516,15 +461,9 @@ public class Algorithms {
 	public static void testMergeSortRelation() {
 		Algorithms algo = new Algorithms();
 		Relation relR = new Relation("RelR");
-		Relation relS = new Relation("RelS");
-		Relation relRS = new Relation("RelRS");
-		relR.populateRelationFromFile("RelR.txt");
-		relS.populateRelationFromFile("RelS.txt");
+		int numTuples = relR.populateRelationFromFile("RelR.txt");
+		algo.mergeSortRelation(relR);
 		relR.printRelation(true, true);
-		relS.printRelation(true, true);
-//		algo.mergeSortRelation(relR);
-		algo.refinedSortMergeJoinRelations(relR, relS, relRS);
-		relRS.printRelation(true, true);
 	}
 
 	public static void testHashJoinRelations() {
@@ -555,7 +494,16 @@ public class Algorithms {
 	}
 
 	public static void testRefinedSortMergeJoinRelations() {
-
+		Algorithms algo = new Algorithms();
+		Relation relR = new Relation("RelR");
+		Relation relS = new Relation("RelS");
+		Relation relRS = new Relation("RelRS");
+		relR.populateRelationFromFile("RelR.txt");
+		relS.populateRelationFromFile("RelS.txt");
+		relR.printRelation(true, true);
+		relS.printRelation(true, true);
+		algo.refinedSortMergeJoinRelations(relR, relS, relRS);
+		relRS.printRelation(true, true);
 	}
 
 	/**
