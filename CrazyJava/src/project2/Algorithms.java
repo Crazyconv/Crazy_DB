@@ -44,8 +44,6 @@ public class Algorithms {
 		Block outputBuffer = new Block();
 
 		rLoader.reset();
-//		Relation sortedRelation = new Relation("sorted_relation");
-//		RelationWriter rSortWriter = sortedRelation.getRelationWriter();
 
 		for (int i = 0; i < numOfSortedSublists; i++) {
 			inputLoader[i] = sortedSubList.get(i).getRelationLoader();
@@ -263,14 +261,15 @@ public class Algorithms {
 		}
 
 		// Merge
-		int numOfSortedSublists = rSubLists.size();
-		RelationLoader[] rSublistLoaders = new RelationLoader[numOfSortedSublists];
-		RelationLoader[] sSublistLoaders = new RelationLoader[numOfSortedSublists];
-		Block[] rInputBuffers = new Block[numOfSortedSublists];
-		Block[] sInputBuffers = new Block[numOfSortedSublists];
+		RelationLoader[] rSublistLoaders = new RelationLoader[rSubLists.size()];
+		RelationLoader[] sSublistLoaders = new RelationLoader[sSubLists.size()];
+		Block[] rInputBuffers = new Block[rSubLists.size()];
+		Block[] sInputBuffers = new Block[sSubLists.size()];
 
-		for (int i = 0; i < numOfSortedSublists; i ++) {
+		for (int i = 0; i < rSubLists.size(); i ++) {
 			rSublistLoaders[i] = rSubLists.get(i).getRelationLoader();
+		}
+		for (int i = 0; i < sSubLists.size(); i ++) {
 			sSublistLoaders[i] = sSubLists.get(i).getRelationLoader();
 		}
 
