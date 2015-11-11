@@ -237,7 +237,6 @@ public class Algorithms {
 	 * @param relRS is the result relation of the join
 	 * @return the number of IO cost (in terms of reading and writing blocks)
 	 */
-	
 	public int refinedSortMergeJoinRelations(Relation relR, Relation relS, Relation relRS){
 		int numIO=0;
 
@@ -278,25 +277,32 @@ public class Algorithms {
 		RelationWriter rsWriter = relRS.getRelationWriter();
 		Block rsOutputBuffer = new Block();
 
+		ArrayList<Tuple> rSmallestTuples = new ArrayList<>();
+		ArrayList<Tuple> sSmallestTuples = new ArrayList<>();
+
 		while (true) {
 			// Load empty buffers
 			numIO += reloadInputBuffers(rSublistLoaders, rInputBuffers);
 			numIO += reloadInputBuffers(sSublistLoaders, sInputBuffers);
 
 			// Find smallest items from R & S.
-			ArrayList<Tuple> rSmallestTuples = new ArrayList<>();
-			ArrayList<Tuple> sSmallestTuples = new ArrayList<>();
-			getSmallestTuplesFromSublists(rInputBuffers, rSmallestTuples);
-			getSmallestTuplesFromSublists(sInputBuffers, sSmallestTuples);
+			if (rSmallestTuples.size() == 0) {
+				getSmallestTuplesFromSublists(rInputBuffers, rSmallestTuples);
+			}
+			if (sSmallestTuples.size() == 0) {
+				getSmallestTuplesFromSublists(sInputBuffers, sSmallestTuples);
+			}
 			if (rSmallestTuples.size() == 0 || sSmallestTuples.size() == 0) break;
 
-			while (sSmallestTuples.get(0).key < rSmallestTuples.get(0).key) {
-				sSmallestTuples = new ArrayList<>();
-				getSmallestTuplesFromSublists(sInputBuffers, sSmallestTuples);
-				if (sSmallestTuples.size() == 0) break;
+			// Continue on reload if representative group has smaller keys.
+			if (rSmallestTuples.get(0).key < sSmallestTuples.get(0).key) {
+				rSmallestTuples.clear();
+				continue;
 			}
-			if (sSmallestTuples.size() == 0) continue;
-			if (sSmallestTuples.get(0).key > rSmallestTuples.get(0).key) continue;
+			if (rSmallestTuples.get(0).key > sSmallestTuples.get(0).key) {
+				sSmallestTuples.clear();
+				continue;
+			}
 
 			for (Tuple rTuple : rSmallestTuples) {
 				for (Tuple sTuple : sSmallestTuples) {
@@ -309,6 +315,9 @@ public class Algorithms {
 					}
 				}
 			}
+
+			rSmallestTuples.clear();
+			sSmallestTuples.clear();
 		}
 
 		if (rsOutputBuffer.getNumTuples() > 0) {
@@ -454,15 +463,15 @@ public class Algorithms {
 	public static void testCases(){
 
 //		testMergeSortRelation();
-		testHashJoinRelations();
-//		testRefinedSortMergeJoinRelations();
+//		testHashJoinRelations();
+		testRefinedSortMergeJoinRelations();
 	
 	}
 
 	private static void compareRelation(Relation a, Relation b) {
 		if (a.getNumTuples() != b.getNumTuples()) {
 			System.out.println("[ERROR] Different numbers of tuples. A: " + a.getNumTuples() + " B: " + b.getNumTuples());
-			return;
+//			return;
 		}
 		System.out.println("Both relation have " + a.getNumTuples() + " tuples.");
 		RelationLoader loaderA = a.getRelationLoader();
@@ -552,6 +561,7 @@ public class Algorithms {
 		relJoint.populateRelationFromFile("RelJoint.txt");
 		algo.refinedSortMergeJoinRelations(relR, relS, relRS);
 		compareRelation(relRS, relJoint);
+		relRS.printRelation(true, true);
 	}
 
 	/**
