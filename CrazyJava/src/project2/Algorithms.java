@@ -295,6 +295,8 @@ public class Algorithms {
 
 		ArrayList<Tuple> rSmallestTuples = new ArrayList<>();
 		ArrayList<Tuple> sSmallestTuples = new ArrayList<>();
+		ArrayList<Tuple> nextRSmallestTuples = new ArrayList<>();
+		ArrayList<Tuple> nextSSmallestTuples = new ArrayList<>();
 
 		while (true) {
 			// Load empty buffers
@@ -320,6 +322,27 @@ public class Algorithms {
 				continue;
 			}
 
+			// Handle tuples with same key in different block.
+			while (true) {
+				numIO += reloadInputBuffers(rSublistLoaders, rInputBuffers);
+				getSmallestTuplesFromSublists(rInputBuffers, nextRSmallestTuples);
+				if (nextRSmallestTuples.size() > 0 &&
+						nextRSmallestTuples.get(0).key == rSmallestTuples.get(0).key) {
+					rSmallestTuples.addAll(nextRSmallestTuples);
+					nextRSmallestTuples.clear();
+				} else break;
+			}
+
+			while (true) {
+				numIO += reloadInputBuffers(sSublistLoaders, sInputBuffers);
+				getSmallestTuplesFromSublists(sInputBuffers, nextSSmallestTuples);
+				if (nextSSmallestTuples.size() > 0 &&
+						nextSSmallestTuples.get(0).key == sSmallestTuples.get(0).key) {
+					sSmallestTuples.addAll(nextSSmallestTuples);
+					nextSSmallestTuples.clear();
+				} else break;
+			}
+
 			for (Tuple rTuple : rSmallestTuples) {
 				for (Tuple sTuple : sSmallestTuples) {
 					Tuple jointTuple = new JointTuple(rTuple, sTuple);
@@ -333,7 +356,11 @@ public class Algorithms {
 			}
 
 			rSmallestTuples.clear();
+			rSmallestTuples.addAll(nextRSmallestTuples);
+			nextRSmallestTuples.clear();
 			sSmallestTuples.clear();
+			sSmallestTuples.addAll(nextSSmallestTuples);
+			nextSSmallestTuples.clear();
 		}
 
 		if (rsOutputBuffer.getNumTuples() > 0) {
@@ -577,7 +604,6 @@ public class Algorithms {
 		relJoint.populateRelationFromFile("RelJoint.txt");
 		algo.refinedSortMergeJoinRelations(relR, relS, relRS);
 		compareRelation(relRS, relJoint);
-		relRS.printRelation(true, true);
 	}
 
 	/**
