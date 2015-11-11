@@ -157,8 +157,25 @@ public class Algorithms {
 		if(result.tupleLst.size() > 0){
 			relRS.getRelationWriter().writeBlock(result);
 		}
-		
+
+		// check whether theoretical IO is equal to calculated IO
+		int theoreticalIO = 2 * (getTotalBlocks(rBuckets) + getTotalBlocks(sBuckets)) +
+				relR.getNumBlocks() + relS.getNumBlocks();
+		if(theoreticalIO == numIO){
+			System.out.println("numIO calculated correctly!");
+		} else {
+			System.out.println("numIO calculated wrongly!");
+		}
+
 		return numIO;
+	}
+
+	private int getTotalBlocks(ArrayList<ArrayList<Block>> diskBuckets){
+		int num = 0;
+		for(ArrayList<Block> bucket: diskBuckets){
+			num += bucket.size();
+		}
+		return num;
 	}
 
 	private int getTotalTuples(ArrayList<ArrayList<Block>> diskBuckets){
