@@ -16,7 +16,7 @@
 26  datalog
 27  intended
 28  oxford
-38  TRUE
+38  true
 42  adds
 43  impossible
 47  dbmss
