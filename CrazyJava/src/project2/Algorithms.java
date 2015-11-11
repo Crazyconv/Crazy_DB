@@ -22,8 +22,6 @@ public class Algorithms {
 	public int mergeSortRelation(Relation rel){
 		int numIO=0;
 
-		// Check Memory enough.
-
 		RelationLoader rLoader = rel.getRelationLoader();
 
 		// Phase 1: create sorted sublist
@@ -34,6 +32,8 @@ public class Algorithms {
 			numIO += getSortedSublist(rLoader, sortedSubRelation);
 			sortedSubList.add(sortedSubRelation);
 		}
+
+		System.out.println("Number of sub-lists: " + sortedSubList.size());
 
 
 		// Phase 2: merge
@@ -255,8 +255,6 @@ public class Algorithms {
 	public int refinedSortMergeJoinRelations(Relation relR, Relation relS, Relation relRS){
 		int numIO=0;
 
-		// Check enough memory
-
 		RelationLoader rLoader = relR.getRelationLoader();
 		RelationLoader sLoader = relS.getRelationLoader();
 
@@ -372,6 +370,12 @@ public class Algorithms {
 	}
 
 
+	/**
+	 * Create sub-list from relation loader.
+	 * @param loader is the relation loader.
+	 * @param sublist is the sub-list.
+	 * @return the number of IO cost (in terms of reading and writing blocks)
+	 */
 	private int getSortedSublist(RelationLoader loader, Relation sublist) {
 		int numIO = 0;
 
@@ -407,7 +411,12 @@ public class Algorithms {
 		return numIO;
 	}
 
-
+	/**
+	 * Load input buffers from relation loaders.
+	 * @param loaders is the relation loader list.
+	 * @param buffers is the buffer list.
+	 * @return the number of IO cost (in terms of reading and writing blocks)
+	 */
 	private int reloadInputBuffers(RelationLoader[] loaders, Block[] buffers) {
 		int numIO = 0;
 		for (int i = 0; i < buffers.length; i++) {
@@ -419,7 +428,12 @@ public class Algorithms {
 		return numIO;
 	}
 
-
+	/**
+	 * Get the list of smallest tuples from sub lists.
+	 * @param buffers is the input buffer list.
+	 * @param tuples is the list for smallest tuples.
+	 * @return the number of IO cost (in terms of reading and writing blocks)
+	 */
 	private int getSmallestTuplesFromSublists(Block[] buffers, ArrayList<Tuple> tuples) {
 		int numIO = 0;
 		int smallestKey = Integer.MAX_VALUE;
@@ -505,9 +519,9 @@ public class Algorithms {
 	 */
 	public static void testCases(){
 
-//		testMergeSortRelation();
+		testMergeSortRelation();
 //		testHashJoinRelations();
-		testRefinedSortMergeJoinRelations();
+//		testRefinedSortMergeJoinRelations();
 	
 	}
 
@@ -565,18 +579,21 @@ public class Algorithms {
 		Relation relRSorted = new Relation("RelRSorted");
 		relR.populateRelationFromFile("RelR.txt");
 		relRSorted.populateRelationFromFile("RelRSorted.txt");
-		algo.mergeSortRelation(relR);
+		relR.printRelation(false, false);
+		int numIO = algo.mergeSortRelation(relR);
+		System.out.println("Verifying merge sort on relation R.");
+		compareRelation(relR, relRSorted);
+		System.out.println("Number of IO: " + numIO);
 
 		Relation relS = new Relation("RelS");
 		Relation relSSorted = new Relation("RelSSorted");
 		relS.populateRelationFromFile("RelS.txt");
 		relSSorted.populateRelationFromFile("RelSSorted.txt");
-		algo.mergeSortRelation(relS);
-
-		System.out.println("Verifying merge sort on relation R.");
-		compareRelation(relR, relRSorted);
+		relS.printRelation(false, false);
+		numIO = algo.mergeSortRelation(relS);
 		System.out.println("Verifying merge sort on relation S.");
 		compareRelation(relS, relSSorted);
+		System.out.println("Number of IO: " + numIO);
 	}
 
 	public static void testHashJoinRelations() {
@@ -602,8 +619,9 @@ public class Algorithms {
 		relR.populateRelationFromFile("RelR.txt");
 		relS.populateRelationFromFile("RelS.txt");
 		relJoint.populateRelationFromFile("RelJoint.txt");
-		algo.refinedSortMergeJoinRelations(relR, relS, relRS);
+		int numIO = algo.refinedSortMergeJoinRelations(relR, relS, relRS);
 		compareRelation(relRS, relJoint);
+		System.out.println("Number of IO: " + numIO);
 	}
 
 	/**
