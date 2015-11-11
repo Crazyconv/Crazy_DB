@@ -13,6 +13,6 @@ public class Setting {
 	/*The maximum number of tuples that can be stored in one block*/ 
 	public static int blockFactor=20;
 	/*The size of memory (or M) used for sorting or joining in terms of number of blocks*/
-	public static int memorySize=20;  
+	public static int memorySize=20;
 	
 }

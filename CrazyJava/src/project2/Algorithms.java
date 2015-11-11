@@ -35,7 +35,6 @@ public class Algorithms {
 
 		System.out.println("Number of sub-lists: " + sortedSubList.size());
 
-
 		// Phase 2: merge
 		int numOfSortedSublists = sortedSubList.size();
 
@@ -63,188 +62,21 @@ public class Algorithms {
 					targetBlock.tupleLst = outputBuffer.tupleLst;
 					outputBuffer = new Block();
 					outputBuffer.insertTuple(tuple);
-					numIO ++;
+//					numIO ++;
 				}
 			}
 
 		}
+
 		if (outputBuffer.getNumTuples() > 0) {
 			Block targetBlock = rLoader.loadNextBlocks(1)[0];
 			targetBlock.tupleLst = outputBuffer.tupleLst;
-			numIO ++;
-		}
-
-		return numIO;
-	}
-	
-	/**
-	 * Join relations relR and relS using Setting.memorySize buffers of memory to produce the result relation relRS
-	 * @param relR is one of the relation in the join
-	 * @param relS is the other relation in the join
-	 * @param relRS is the result relation of the join
-	 * @return the number of IO cost (in terms of reading and writing blocks)
-	 */
-	public int hashJoinRelations(Relation relR, Relation relS, Relation relRS){
-		int numIO=0;
-		int M = Setting.memorySize;
-		Block[] memBuffers = new Block[M];
-		ArrayList<ArrayList<Block>> rBuckets = new ArrayList<ArrayList<Block>>();
-		ArrayList<ArrayList<Block>> sBuckets = new ArrayList<ArrayList<Block>>();
-
-		// hash partition
-		numIO = partition(relR, memBuffers, rBuckets, M, numIO);
-		numIO = partition(relS, memBuffers, sBuckets, M, numIO);
-
-		// join
-		Block result = new Block();
-		ArrayList<ArrayList<Block>> temp;
-		boolean swap = false;
-		// the size of the largest bucket is calculated during partition
-		// for simplicity, we calculate it seperately here
-		int bkSizeR = getLargestBucketSize(rBuckets);
-		int bkSizeS = getLargestBucketSize(sBuckets);
-		// System.out.println("bkSizeR: " + bkSizeR);
-		// System.out.println("bkSizeS: " + bkSizeS);
-		if(bkSizeS > M-1){
-			if(bkSizeR > M-1){
-				System.out.println("Error: One bucket cannot be fully loaded into memory buffer.");
-				return 0;
-			}
-			temp = rBuckets;
-			rBuckets = sBuckets;
-			sBuckets = temp;
-			swap = true;
-		}
-
-		// for each bucket of S
-		for(int i = 0; i < M-1; i++){
-			ArrayList<Block> sBucket = sBuckets.get(i);
-			// load the entire bucket to memory
-			initMemBuffers(memBuffers, M-1);
-			int index = 0;
-			for(Block block: sBucket){
-				memBuffers[index] = block;
-				numIO ++;
-				index ++;
-			}
-			// load each block of R and perform in-memory join
-			for(Block block: rBuckets.get(i)){
-				memBuffers[M-1] = block;
-				numIO ++;
-				for(Tuple rTuple: memBuffers[M-1].tupleLst){
-					for(int j = 0; j < index; j++){
-						for(Tuple sTuple: memBuffers[j].tupleLst){
-							if(rTuple.key == sTuple.key){
-								JointTuple jt = null;
-								if(swap){
-									jt = new JointTuple(sTuple, rTuple);
-								} else {
-									jt = new JointTuple(rTuple, sTuple);
-								}
-								// if block full, write to disk
-								// but we don't count the IO cost here
-								while(!result.insertTuple(jt)){
-									relRS.getRelationWriter().writeBlock(result);
-									result = new Block();
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		// write the remaining block to disk
-		if(result.tupleLst.size() > 0){
-			relRS.getRelationWriter().writeBlock(result);
-		}
-
-		// check whether theoretical IO is equal to calculated IO
-		int theoreticalIO = 2 * (getTotalBlocks(rBuckets) + getTotalBlocks(sBuckets)) +
-				relR.getNumBlocks() + relS.getNumBlocks();
-		if(theoreticalIO == numIO){
-			System.out.println("numIO calculated correctly!");
-		} else {
-			System.out.println("numIO calculated wrongly!");
+//			numIO ++;
 		}
 
 		return numIO;
 	}
 
-	private int getTotalBlocks(ArrayList<ArrayList<Block>> diskBuckets){
-		int num = 0;
-		for(ArrayList<Block> bucket: diskBuckets){
-			num += bucket.size();
-		}
-		return num;
-	}
-
-	private int getTotalTuples(ArrayList<ArrayList<Block>> diskBuckets){
-		int num = 0;
-		for(ArrayList<Block> bucket: diskBuckets){
-			for(Block block: bucket){
-				num += block.tupleLst.size();
-			}
-		}
-		return num;
-	}
-
-	private void initMemBuffers(Block[] memBuffers, int size){
-		for(int i = 0; i < size; i++)
-			memBuffers[i] = new Block();
-	}
-
-	private void initDiskBuckets(ArrayList<ArrayList<Block>> diskBuckets, int size){
-		for(int i = 0; i < size; i++){
-			diskBuckets.add(new ArrayList<Block>());
-		}
-	}
-
-
-	private int hash(int key, int size){
-		int a = 8 * size / 23 + 5;
-		return (a * key) % size;
-	}
-
-	private int partition(Relation r, Block[] memBuffers, ArrayList<ArrayList<Block>> diskBuckets, int M, int numIO){
-		initMemBuffers(memBuffers, M-1);
-		initDiskBuckets(diskBuckets, M-1);
-		// should be careful, check whether neet to reset "iterator"
-		Relation.RelationLoader rLoader = r.getRelationLoader();
-		while(rLoader.hasNextBlock()){
-			// load next block to the last memory buffer
-			memBuffers[M-1] = rLoader.loadNextBlocks(1)[0];
-			numIO ++;
-			for(Tuple tuple: memBuffers[M-1].tupleLst){
-				int id = hash(tuple.key, M-1);
-				while(!memBuffers[id].insertTuple(tuple)){
-					// if buffer full, write it to disk, empty buffer
-					diskBuckets.get(id).add(memBuffers[id]);
-					numIO ++;
-					memBuffers[id] = new Block();
-				}
-			}
-		}
-		// for each buffer, if not empty, write to disk
-		for(int i = 0; i < M-1; i++){
-			if(memBuffers[i].tupleLst.size() > 0){
-				diskBuckets.get(i).add(memBuffers[i]);
-				numIO ++;
-			}
-		}
-		// System.out.println("Total Number of tuples in buckets: " + getTotalTuples(diskBuckets));
-		return numIO;
-	}
-
-	private int getLargestBucketSize(ArrayList<ArrayList<Block>> diskBuckets){
-		int maxSize = 0;
-		for(ArrayList<Block> bucket: diskBuckets){
-			if(bucket.size() > maxSize){
-				maxSize = bucket.size();
-			}
-		}
-		return maxSize;
-	}
-	
 	/**
 	 * Join relations relR and relS using Setting.memorySize buffers of memory to produce the result relation relRS
 	 * @param relR is one of the relation in the join
@@ -274,6 +106,9 @@ public class Algorithms {
 			numIO += getSortedSublist(sLoader, sortedSubRelation);
 			sSubLists.add(sortedSubRelation);
 		}
+
+		System.out.println("Number of sub-lists for R: " + rSubLists.size());
+		System.out.println("Number of sub-lists for S: " + sSubLists.size());
 
 		// Merge
 		RelationLoader[] rSublistLoaders = new RelationLoader[rSubLists.size()];
@@ -348,7 +183,7 @@ public class Algorithms {
 						rsWriter.writeBlock(rsOutputBuffer);
 						rsOutputBuffer = new Block();
 						rsOutputBuffer.insertTuple(jointTuple);
-						numIO ++;
+//						numIO ++;
 					}
 				}
 			}
@@ -363,7 +198,7 @@ public class Algorithms {
 
 		if (rsOutputBuffer.getNumTuples() > 0) {
 			rsWriter.writeBlock(rsOutputBuffer);
-			numIO ++;
+//			numIO ++;
 		}
 
 		return numIO;
@@ -456,6 +291,193 @@ public class Algorithms {
 		return numIO;
 	}
 
+
+
+	/**
+	 * Join relations relR and relS using Setting.memorySize buffers of memory to produce the result relation relRS
+	 * @param relR is one of the relation in the join
+	 * @param relS is the other relation in the join
+	 * @param relRS is the result relation of the join
+	 * @return the number of IO cost (in terms of reading and writing blocks)
+	 */
+	public int hashJoinRelations(Relation relR, Relation relS, Relation relRS){
+		int numIO=0;
+		int M = Setting.memorySize;
+		Block[] memBuffers = new Block[M];
+		ArrayList<ArrayList<Block>> rBuckets = new ArrayList<ArrayList<Block>>();
+		ArrayList<ArrayList<Block>> sBuckets = new ArrayList<ArrayList<Block>>();
+
+		// hash partition
+		numIO = partition(relR, memBuffers, rBuckets, M, numIO);
+		numIO = partition(relS, memBuffers, sBuckets, M, numIO);
+
+		// join
+		Block result = new Block();
+		ArrayList<ArrayList<Block>> temp;
+		boolean swap = false;
+		// the size of the largest bucket is calculated during partition
+		// for simplicity, we calculate it seperately here
+		int bkSizeR = getLargestBucketSize(rBuckets);
+		int bkSizeS = getLargestBucketSize(sBuckets);
+		// System.out.println("bkSizeR: " + bkSizeR);
+		// System.out.println("bkSizeS: " + bkSizeS);
+		if(bkSizeS > M-1){
+			if(bkSizeR > M-1){
+				System.out.println("Error: One bucket cannot be fully loaded into memory buffer.");
+				return 0;
+			}
+			temp = rBuckets;
+			rBuckets = sBuckets;
+			sBuckets = temp;
+			swap = true;
+		}
+
+		// for each bucket of S
+		for(int i = 0; i < M-1; i++){
+			ArrayList<Block> sBucket = sBuckets.get(i);
+			// load the entire bucket to memory
+			initMemBuffers(memBuffers, M-1);
+			int index = 0;
+			for(Block block: sBucket){
+				memBuffers[index] = block;
+				numIO ++;
+				index ++;
+			}
+			// load each block of R and perform in-memory join
+			for(Block block: rBuckets.get(i)){
+				memBuffers[M-1] = block;
+				numIO ++;
+				for(Tuple rTuple: memBuffers[M-1].tupleLst){
+					for(int j = 0; j < index; j++){
+						for(Tuple sTuple: memBuffers[j].tupleLst){
+							if(rTuple.key == sTuple.key){
+								JointTuple jt = null;
+								if(swap){
+									jt = new JointTuple(sTuple, rTuple);
+								} else {
+									jt = new JointTuple(rTuple, sTuple);
+								}
+								// if block full, write to disk
+								// but we don't count the IO cost here
+								while(!result.insertTuple(jt)){
+									relRS.getRelationWriter().writeBlock(result);
+									result = new Block();
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		// write the remaining block to disk
+		if(result.tupleLst.size() > 0){
+			relRS.getRelationWriter().writeBlock(result);
+		}
+
+		return numIO;
+	}
+
+	private void initMemBuffers(Block[] memBuffers, int size){
+		for(int i = 0; i < size; i++)
+			memBuffers[i] = new Block();
+	}
+
+	private void initDiskBuckets(ArrayList<ArrayList<Block>> diskBuckets, int size){
+		for(int i = 0; i < size; i++){
+			diskBuckets.add(new ArrayList<Block>());
+		}
+	}
+
+	private int hash(int key, int size){
+		int a = 8 * size / 23 + 5;
+		return (a * key) % size;
+	}
+
+	private int partition(Relation r, Block[] memBuffers, ArrayList<ArrayList<Block>> diskBuckets, int M, int numIO){
+		initMemBuffers(memBuffers, M-1);
+		initDiskBuckets(diskBuckets, M-1);
+		// should be careful, check whether neet to reset "iterator"
+		Relation.RelationLoader rLoader = r.getRelationLoader();
+		while(rLoader.hasNextBlock()){
+			// load next block to the last memory buffer
+			memBuffers[M-1] = rLoader.loadNextBlocks(1)[0];
+			numIO ++;
+			for(Tuple tuple: memBuffers[M-1].tupleLst){
+				int id = hash(tuple.key, M-1);
+				while(!memBuffers[id].insertTuple(tuple)){
+					// if buffer full, write it to disk, empty buffer
+					diskBuckets.get(id).add(memBuffers[id]);
+					numIO ++;
+					memBuffers[id] = new Block();
+				}
+			}
+		}
+		// for each buffer, if not empty, write to disk
+		for(int i = 0; i < M-1; i++){
+			if(memBuffers[i].tupleLst.size() > 0){
+				diskBuckets.get(i).add(memBuffers[i]);
+				numIO ++;
+			}
+		}
+		// print statistics
+		int maxSize = 0, minSize = Integer.MAX_VALUE, averagedSize = 0;
+		for(ArrayList<Block> bucket: diskBuckets){
+			if(bucket.size() > maxSize){
+				maxSize = bucket.size();
+			} else if(bucket.size() < minSize){
+				minSize = bucket.size();
+			}
+			averagedSize += bucket.size();
+		}
+		averagedSize /= (M-1);
+		System.out.println("Number of buckets generated: " + String.valueOf(M-1));
+		System.out.println("Maximum size of buckets: " + maxSize);
+		System.out.println("Minimun size of buckets: " + minSize);
+		System.out.println("Averaged size of buckets: " + averagedSize);
+		return numIO;
+	}
+
+	private int getLargestBucketSize(ArrayList<ArrayList<Block>> diskBuckets){
+		int maxSize = 0;
+		for(ArrayList<Block> bucket: diskBuckets){
+			if(bucket.size() > maxSize){
+				maxSize = bucket.size();
+			}
+		}
+		return maxSize;
+	}
+
+	private int getTotalBlocksAllBuckets(Relation r, int M, int blockFactor){
+		ArrayList<ArrayList<Tuple>> tuples = new ArrayList<ArrayList<Tuple>>();
+		for(int i = 0; i < M - 1; i++){
+			tuples.add(new ArrayList<Tuple>());
+		}
+
+		Block buffer;
+		Relation.RelationLoader rLoader = r.getRelationLoader();
+		rLoader.reset();
+		while(rLoader.hasNextBlock()){
+			// load next block to the last memory buffer
+			buffer = rLoader.loadNextBlocks(1)[0];
+			for(Tuple tuple: buffer.tupleLst){
+				int id = hash(tuple.key, M-1);
+				tuples.get(id).add(tuple);
+			}
+		}
+
+		int totalBlocks = 0;
+		for(ArrayList<Tuple> at: tuples){
+			totalBlocks += (int) Math.ceil(((double) at.size())/blockFactor);
+		}
+		return totalBlocks;
+	}
+
+	private int getHashJoinTheoreticalIO(Relation relR, Relation relS, int M, int blockFactor) {
+		return (getTotalBlocksAllBuckets(relR, M, blockFactor) +
+				getTotalBlocksAllBuckets(relS, M, blockFactor)) * 2 +
+				relR.getNumBlocks() + relS.getNumBlocks();
+	}
+
 	
 	/**
 	 * Example usage of classes. 
@@ -520,15 +542,15 @@ public class Algorithms {
 	public static void testCases(){
 
 		testMergeSortRelation();
-//		testHashJoinRelations();
-//		testRefinedSortMergeJoinRelations();
+		testHashJoinRelations();
+		testRefinedSortMergeJoinRelations();
 	
 	}
 
 	private static void compareRelation(Relation a, Relation b) {
 		if (a.getNumTuples() != b.getNumTuples()) {
 			System.out.println("[ERROR] Different numbers of tuples. A: " + a.getNumTuples() + " B: " + b.getNumTuples());
-//			return;
+			return;
 		}
 		System.out.println("Both relation have " + a.getNumTuples() + " tuples.");
 		RelationLoader loaderA = a.getRelationLoader();
@@ -605,9 +627,12 @@ public class Algorithms {
 		relR.populateRelationFromFile("RelR.txt");
 		relS.populateRelationFromFile("RelS.txt");
 		relJoint.populateRelationFromFile("RelJoint.txt");
-		algo.hashJoinRelations(relR, relS, relRS);
+		relR.printRelation(false, false);
+		relS.printRelation(false, false);
+		int numIO = algo.hashJoinRelations(relR, relS, relRS);
 		algo.mergeSortRelation(relRS);
 		compareRelation(relRS, relJoint);
+		System.out.println("Number of IO: " + numIO);
 	}
 
 	public static void testRefinedSortMergeJoinRelations() {
@@ -619,8 +644,11 @@ public class Algorithms {
 		relR.populateRelationFromFile("RelR.txt");
 		relS.populateRelationFromFile("RelS.txt");
 		relJoint.populateRelationFromFile("RelJoint.txt");
+		relR.printRelation(false, false);
+		relS.printRelation(false, false);
 		int numIO = algo.refinedSortMergeJoinRelations(relR, relS, relRS);
 		compareRelation(relRS, relJoint);
+		relRS.printRelation(false, false);
 		System.out.println("Number of IO: " + numIO);
 	}
 
