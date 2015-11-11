@@ -9,9 +9,9 @@ package project2;
 import project2.Relation.RelationLoader;
 import project2.Relation.RelationWriter;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 
 public class Algorithms {
@@ -461,12 +461,60 @@ public class Algorithms {
 	
 	}
 
+	private static void compareRelation(Relation a, Relation b) {
+		if (a.getNumTuples() != b.getNumTuples()) {
+			System.out.println("[ERROR] Different numbers of tuples. A: " + a.getNumTuples() + " B: " + b.getNumTuples());
+			return;
+		}
+		System.out.println("Both relation have " + a.getNumTuples() + " tuples.");
+		RelationLoader loaderA = a.getRelationLoader();
+		RelationLoader loaderB = b.getRelationLoader();
+		while (loaderA.hasNextBlock()) {
+			Block blockA = loaderA.loadNextBlocks(1)[0];
+			Block blockB = loaderB.loadNextBlocks(1)[0];
+
+			if (blockA.getNumTuples() != blockB.getNumTuples()) {
+				System.out.println("[ERROR] Blocks have different numbers of tuples. A: " +
+						blockA.getNumTuples() + " B: " + blockB.getNumTuples());
+				return;
+			}
+
+			for (int i = 0; i < blockA.getNumTuples(); i ++) {
+				ArrayList<Tuple> tuplesFromA = new ArrayList<>();
+				tuplesFromA.add(blockA.);
+				for (int j = i + 1; j < blockA.getNumTuples(); j ++) {
+
+				}
+				if (!blockA.tupleLst.get(i).toString().equals(blockB.tupleLst.get(i).toString())) {
+					System.out.println("[ERROR] Blocks are different.");
+					System.out.println("A: " + blockA.tupleLst.get(i).toString());
+					System.out.println("B: " + blockB.tupleLst.get(i).toString());
+				}
+			}
+
+		}
+		System.out.println("All tuples are the same.");
+	}
+
 	public static void testMergeSortRelation() {
 		Algorithms algo = new Algorithms();
+
 		Relation relR = new Relation("RelR");
-		int numTuples = relR.populateRelationFromFile("RelR.txt");
+		Relation relRSorted = new Relation("RelRSorted");
+		relR.populateRelationFromFile("RelR.txt");
+		relRSorted.populateRelationFromFile("RelRSorted.txt");
 		algo.mergeSortRelation(relR);
-		relR.printRelation(true, true);
+
+		Relation relS = new Relation("RelS");
+		Relation relSSorted = new Relation("RelSSorted");
+		relS.populateRelationFromFile("RelS.txt");
+		relSSorted.populateRelationFromFile("RelSSorted.txt");
+		algo.mergeSortRelation(relS);
+
+		System.out.println("Verifying merge sort on relation R.");
+		compareRelation(relR, relRSorted);
+		System.out.println("Verifying merge sort on relation S.");
+		compareRelation(relS, relSSorted);
 	}
 
 	public static void testHashJoinRelations() {
